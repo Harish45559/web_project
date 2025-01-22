@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Attendance{% endblock %}
+
+{% block content %}
+<h1 class="centered-heading">Employee Attendance</h1>
+
+<div class="attendance-container">
+    <!-- Clock In Section -->
+    <div class="attendance-section clock-in">
+        <h2>Clock In</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="clock_in">
+           
+            <select name="employee_id" required>
+                <option value="" disabled selected>Please select an employee</option>
+                {% for employee in employees %}
+                <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Adjust Time Checkbox (Left-Aligned Label) -->
+            <div class="checkbox-container">
+                <label for="adjust_time_in">Adjust Time</label>
+                <input type="checkbox" id="adjust_time_in" name="adjust_time">
+            </div>
+
+            <div id="time_input_in" class="custom-time-container">
+                <label for="custom_time_in">Select Time & Date</label>
+                <input type="datetime-local" id="custom_time_in" name="custom_time">
+            </div>
+
+            <button type="submit" class="btn btn-success">Clock In</button>
+        </form>
+    </div>
+
+    <!-- Clock Out Section -->
+    <div class="attendance-section clock-out">
+        <h2>Clock Out</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="clock_out">
+           
+            <select name="employee_id" required>
+                <option value="" disabled selected>Please select an employee</option>
+                {% for employee in employees %}
+                <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Adjust Time Checkbox (Left-Aligned Label) -->
+            <div class="checkbox-container">
+                <label for="adjust_time_out">Adjust Time</label>
+                <input type="checkbox" id="adjust_time_out" name="adjust_time">
+            </div>
+
+            <div id="time_input_out" class="custom-time-container">
+                <label for="custom_time_out">Select Time & Date</label>
+                <input type="datetime-local" id="custom_time_out" name="custom_time">
+            </div>
+
+            <button type="submit" class="btn btn-danger">Clock Out</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var adjustTimeIn = document.getElementById("adjust_time_in");
+        var adjustTimeOut = document.getElementById("adjust_time_out");
+
+        if (adjustTimeIn) {
+            adjustTimeIn.addEventListener("change", function () {
+                var timeInput = document.getElementById("time_input_in");
+                if (timeInput) {
+                    timeInput.style.display = this.checked ? "block" : "none";
+                }
+            });
+        }
+
+        if (adjustTimeOut) {
+            adjustTimeOut.addEventListener("change", function () {
+                var timeInput = document.getElementById("time_input_out");
+                if (timeInput) {
+                    timeInput.style.display = this.checked ? "block" : "none";
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

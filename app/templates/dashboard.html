@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <!-- Centered Heading -->
+    <h1 class="centered-heading">Welcome to Cozy Cup</h1>
+
+    <!-- Flash Messages as Toasts -->
+    <div id="toast-container" class="position-fixed top-0 end-0 p-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+{% endblock %}
+
+<!-- Bootstrap 5 JS (Ensure Bootstrap is loaded for Toasts to work) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Add the JavaScript for hiding the Toast notifications after a few seconds -->
+<script>
+    // Get all toasts
+    const toasts = document.querySelectorAll('.toast');
+
+    // Loop through each toast and hide after 10 seconds
+    toasts.forEach((toast) => {
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+        }, 10000);  // 10 seconds delay before hiding the toast
+    });
+</script>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Employee Report{% endblock %}
+
+{% block content %}
+<h2 class="centered-heading">Generate Employee Attendance Report</h2>
+
+<div class="report-form">
+    <form method="POST">
+        <label for="employee_id">Select Employee:</label>
+        <select id="employee_id" name="employee_id" required>
+            <option value="" disabled selected>Select an Employee</option>
+            {% for employee in employees %}
+            <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="report_type">Select Report Type:</label>
+        <select id="report_type" name="report_type" required>
+            <option value="weekly">Weekly Report</option>
+            <option value="monthly">Monthly Report</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+    </form>
+</div>
+{% endblock %}
