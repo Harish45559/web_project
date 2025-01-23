@@ -17,7 +17,7 @@ def create_app():
     login_manager.login_view = 'main.login'
 
     with app.app_context():
-        from .routes import main
+        from .routes import main  # Import the Blueprint
         app.register_blueprint(main)
 
     return app
