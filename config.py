@@ -1,11 +1,10 @@
 import os
 from dotenv import load_dotenv
 
-# Load .env file
+# Load environment variables
 load_dotenv()
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY','postgresql://localhost:qwerty123@your_host:5432/project' )
-    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://localhost:qwerty123@your_host:5432/project')
-    SQLALCHEMY_DATABASE_URI = DATABASE_URL
+    SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
+    SQLALCHEMY_DATABASE_URI = os.getenv('postgresql://postgres:qwerty123@5432/project')  # Make sure this line is correct
     SQLALCHEMY_TRACK_MODIFICATIONS = False
