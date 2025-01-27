@@ -1,4 +1,4 @@
-from app import create_app # type: ignore
+from yourapp import create_app # type: ignore
 
 app = create_app()
 

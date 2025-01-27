@@ -3,38 +3,41 @@
 {% block title %}Employee List{% endblock %}
 
 {% block content %}
-<div class="employee-list-container">
+<div style="max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; text-align: center;">
     <h2>Employee List</h2>
     
-    <table class="employee-table">
+    <table style="width: 100%; margin-top: 20px; border-collapse: separate; border-spacing: 0 10px;">
         <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>DOB</th>
-                <th>Joining Date</th>
-                <th>BRP</th>
-                <th>Address</th>
-                <th>Actions</th>
+            <tr style="background-color: #007bff; color: white; text-align: left;">
+                <th style="padding: 12px; font-size: 16px; border-radius: 5px 5px 0 0;">First Name</th>
+                <th style="padding: 12px; font-size: 16px; border-radius: 5px 5px 0 0;">Last Name</th>
+                <th style="padding: 12px; font-size: 16px; border-radius: 5px 5px 0 0;">DOB</th>
+                <th style="padding: 12px; font-size: 16px; border-radius: 5px 5px 0 0;">Joining Date</th>
+                <th style="padding: 12px; font-size: 16px; border-radius: 5px 5px 0 0;">BRP</th>
+                <th style="padding: 12px; font-size: 16px; border-radius: 5px 5px 0 0;">Address</th>
+                <th style="padding: 12px; font-size: 16px; border-radius: 5px 5px 0 0;">Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for employee in employees %}
-            <tr>
-                <td>{{ employee.first_name }}</td>
-                <td>{{ employee.last_name }}</td>
-                <td>{{ employee.dob }}</td>
-                <td>{{ employee.joining_date }}</td>
-                <td>{{ employee.brp }}</td>
-                <td>{{ employee.address }}</td>
-                <td class="actions-column">
-                    <a href="{{ url_for('main.edit_employee', employee_id=employee.id) }}" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Edit
+            <tr style="background: white; border-radius: 10px; transition: 0.3s ease-in-out;">
+                <td style="padding: 15px; border: 1px solid #ddd; font-size: 14px; color: #333;">{{ employee.first_name }}</td>
+                <td style="padding: 15px; border: 1px solid #ddd; font-size: 14px; color: #333;">{{ employee.last_name }}</td>
+                <td style="padding: 15px; border: 1px solid #ddd; font-size: 14px; color: #333;">{{ employee.dob }}</td>
+                <td style="padding: 15px; border: 1px solid #ddd; font-size: 14px; color: #333;">{{ employee.joining_date }}</td>
+                <td style="padding: 15px; border: 1px solid #ddd; font-size: 14px; color: #333;">{{ employee.brp }}</td>
+                <td style="padding: 15px; border: 1px solid #ddd; font-size: 14px; color: #333;">{{ employee.address }}</td>
+                <td style="display: flex; justify-content: center; gap: 10px; text-align: center;">
+                    <a href="{{ url_for('main.edit_employee', employee_id=employee.id) }}" 
+                        style="padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; text-decoration: none; text-align: center; background-color: #28a745; color: white; border: none;">
+                        <i class="fas fa-edit" style="font-size: 16px; margin-right: 5px;"></i> Edit
                     </a>
                     
                     <form method="POST" action="{{ url_for('main.delete_employee', employee_id=employee.id) }}" style="display:inline;">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">
-                            <i class="fas fa-trash-alt"></i> Delete
+                        <button type="submit" 
+                            style="padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; text-align: center; background-color: #dc3545; color: white; border: none;" 
+                            onclick="return confirm('Are you sure you want to delete this employee?')">
+                            <i class="fas fa-trash-alt" style="font-size: 16px; margin-right: 5px;"></i> Delete
                         </button>
                     </form>
                 </td>
@@ -43,4 +46,5 @@
         </tbody>
     </table>
 </div>
+
 {% endblock %}
