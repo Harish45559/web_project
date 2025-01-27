@@ -1,9 +1,14 @@
-import os
-from dotenv import load_dotenv
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('config.Config')
 
-load_dotenv()  # Load environment variables from .env
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'main.login'
 
-class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    with app.app_context():
+        from .routes import main
+        app.register_blueprint(main)
+
+        return app
