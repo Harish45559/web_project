@@ -108,10 +108,22 @@ def edit_employee(employee_id):
 @login_required
 def delete_employee(employee_id):
     employee = Employee.query.get_or_404(employee_id)
+
+    # Delete related attendance records before deleting the employee
+    Attendance.query.filter_by(employee_id=employee.id).delete()
+
+    # Now delete the employee
     db.session.delete(employee)
-    db.session.commit()
-    flash(f'Employee {employee.first_name} {employee.last_name} deleted successfully!', 'success')
+    
+    try:
+        db.session.commit()
+        flash('Employee deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting employee: {str(e)}', 'danger')
+
     return redirect(url_for('main.list_employees'))
+
 
 ### ---------- ATTENDANCE ROUTES ---------- ###
 
