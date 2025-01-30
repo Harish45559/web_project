@@ -4,16 +4,23 @@
 
 {% block content %}
 <div class="login-container">
-    <div class="login-form">
 
-        <h2>Cozy Cup Admin Login</h2>
-        <form method="POST" action="{{ url_for('main.login') }}">
-            <input type="text" id="username" name="username" placeholder="Username" required>
-            <input type="password" id="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
+    <!-- Left side (Login Form) -->
+    <div class="left-side">
+        <div class="login-form">
+            <h2>Cozy Cup Admin Login</h2>
+            <form method="POST" action="{{ url_for('main.login') }}">
+                <input type="text" id="username" name="username" placeholder="Username" required>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
     </div>
 
-<div  ><img width="700px" height="100%" src=".\static\logo.png"alt=""></div>
+    <!-- Right side (Logo) -->
+    <div class="right-side">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Cozy Cup Logo">
+    </div>
+
 </div>
 {% endblock %}

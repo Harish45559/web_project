@@ -10,11 +10,10 @@
 
 /* Center the main container */
 .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-   
+    max-width: 1431px;
     border-radius: 10px;
+    padding-left: var(--bs-gutter-x,0rem);
+    padding-right: var(--bs-gutter-x,0rem);
 }
 
 /* Center Headings */
@@ -89,54 +88,60 @@
 /* ========================================================
    🌟 LOGIN PAGE STYLES
    ======================================================== */
+/* Set body and html to ensure no overflow */
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
 .login-container {
     display: flex;
-    
-    align-items: center;
     height: 100vh;
-    background-color: #f4f4f4;
 }
 
-/* Login Form */
+.left-side, .right-side {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-side {
+    width: 40%;  /* 40% width for the login form */
+     /* Optional, can be customized */
+}
+
 .login-form {
-    width: 100%;
-    max-width: 400px;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+    width: 80%;
+    max-width: 400px;  /* Max width for the login form */
 }
 
-/* Logo */
-.login-logo {
-    width: 150px;
-    margin-bottom: 20px;
-}
-
-/* Input Fields */
-.login-form input {
+input, button {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
     border-radius: 5px;
-    font-size: 16px;
+    border: 1px solid #ccc;
 }
 
-/* Login Button */
-.login-form button {
-    width: 100%;
-    padding: 12px;
-    background-color: #000;
+button {
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    cursor: pointer;
 }
 
-.login-form button:hover {
-    background-color: #333;
+.right-side {
+    width: 60%;  /* 60% width for the logo */
+/* Optional, can be customized */
+}
+
+.right-side img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 /* ========================================================
