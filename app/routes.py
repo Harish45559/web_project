@@ -190,89 +190,81 @@ def attendance_reports():
 @login_required
 def generate_employee_report():
     employee_id = request.form.get('employee_id')
-    report_type = request.form.get('report_type')  # 'weekly' or 'monthly'
+    report_type = request.form.get('report_type')
 
     if not employee_id or not report_type:
         flash("Please select an employee and report type!", "danger")
         return redirect(url_for('main.attendance_reports'))
 
-    # Fetch employee details
-    employee = Employee.query.get_or_404(employee_id)
-
     # Define report start date
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=7) if report_type == "weekly" else end_date.replace(day=1)
 
-    # Fetch attendance records only for the selected employee
-    attendance_records = Attendance.query.filter(
-        Attendance.employee_id == employee_id,
-        Attendance.clock_in >= start_date,
-        Attendance.clock_out != None
-    ).all()
+    # Generate report for all employees if 'Select All' is chosen
+    if employee_id == "all":
+        employees = Employee.query.all()
+        all_data = []
+        for emp in employees:
+            attendance_records = Attendance.query.filter(
+                Attendance.employee_id == emp.id,
+                Attendance.clock_in >= start_date,
+                Attendance.clock_out != None
+            ).all()
 
-    # Convert data to a DataFrame
-    data = []
-    for record in attendance_records:
-        data.append([
-            employee.first_name + " " + employee.last_name,
-            record.clock_in.strftime('%Y-%m-%d %H:%M:%S'),
-            record.clock_out.strftime('%Y-%m-%d %H:%M:%S') if record.clock_out else "Still Clocked In",
-            str(record.total_work_hours)
-        ])
+            for record in attendance_records:
+                all_data.append([
+                    emp.first_name + " " + emp.last_name,
+                    record.clock_in.strftime('%Y-%m-%d %H:%M:%S'),
+                    record.clock_out.strftime('%Y-%m-%d %H:%M:%S') if record.clock_out else "Still Clocked In",
+                    str(record.total_work_hours)
+                ])
 
-    if not data:
-        flash(f"No attendance records found for {employee.first_name} {employee.last_name}.", "warning")
-        return redirect(url_for('main.attendance_reports'))
+        if not all_data:
+            flash("No attendance records found for selected employees.", "warning")
+            return redirect(url_for('main.attendance_reports'))
 
-    df = pd.DataFrame(data, columns=["Employee", "Clock In", "Clock Out", "Total Work Hours"])
+        df = pd.DataFrame(all_data, columns=["Employee", "Clock In", "Clock Out", "Total Work Hours"])
+        filename = f"all_employees_{report_type}_attendance_{end_date.strftime('%Y%m%d')}.xlsx"
+    else:
+        # Fetch employee details
+        employee = Employee.query.get_or_404(employee_id)
+
+        # Fetch attendance records for the selected employee
+        attendance_records = Attendance.query.filter(
+            Attendance.employee_id == employee_id,
+            Attendance.clock_in >= start_date,
+            Attendance.clock_out != None
+        ).all()
+
+        data = []
+        for record in attendance_records:
+            data.append([
+                employee.first_name + " " + employee.last_name,
+                record.clock_in.strftime('%Y-%m-%d %H:%M:%S'),
+                record.clock_out.strftime('%Y-%m-%d %H:%M:%S') if record.clock_out else "Still Clocked In",
+                str(record.total_work_hours)
+            ])
+
+        if not data:
+            flash(f"No attendance records found for {employee.first_name} {employee.last_name}.", "warning")
+            return redirect(url_for('main.attendance_reports'))
+
+        df = pd.DataFrame(data, columns=["Employee", "Clock In", "Clock Out", "Total Work Hours"])
+        filename = f"{employee.first_name}_{employee.last_name}_{report_type}_attendance_{end_date.strftime('%Y%m%d')}.xlsx"
 
     # Ensure reports folder exists
     if not os.path.exists(REPORTS_FOLDER):
         os.makedirs(REPORTS_FOLDER)
 
-    # Generate filename
-    filename = f"{employee.first_name}_{employee.last_name}_{report_type}_attendance_{end_date.strftime('%Y%m%d')}.xlsx"
     file_path = os.path.join(REPORTS_FOLDER, filename)
 
     # Save file
     df.to_excel(file_path, index=False, engine='openpyxl')
 
     # Save report info in DB
-    new_report = Report(report_type=f"{report_type} ({employee.first_name} {employee.last_name})", file_path=file_path)
+    new_report = Report(report_type=f"{report_type} Report", file_path=file_path)
     db.session.add(new_report)
     db.session.commit()
 
-    flash(f"{report_type.capitalize()} report for {employee.first_name} {employee.last_name} generated!", "success")
-    return redirect(url_for('main.attendance_reports'))
-
-
-@main.route('/download_report/<int:report_id>')
-@login_required
-def download_report(report_id):
-    report = Report.query.get_or_404(report_id)
-
-    # Convert the file path to an absolute path
-    absolute_path = os.path.abspath(report.file_path)
-
-    # Check if the file exists before sending
-    if not os.path.exists(absolute_path):
-        flash("Error: Report file not found!", "danger")
-        return redirect(url_for('main.attendance_reports'))
-
-    return send_file(absolute_path, as_attachment=True)
-
-
-@main.route('/delete_report/<int:report_id>', methods=['POST'])
-@login_required
-def delete_report(report_id):
-    report = Report.query.get_or_404(report_id)
-
-    # Delete the actual file if it exists
-    if os.path.exists(report.file_path):
-        os.remove(report.file_path)
-
-    db.session.delete(report)
-    db.session.commit()
-    
-    flash("Report deleted successfully!", "success")
+    flash(f"{report_type.capitalize()} report generated successfully!", "success")
     return redirect(url_for('main.attendance_reports'))
