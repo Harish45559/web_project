@@ -726,80 +726,157 @@ button {
 
 
 /* ========================================================
-   🌟 ADD EMPLOYEE FORM
+   🌟 ADD EMPLOYEE FORM - MODERN DESIGN
    ======================================================== */
 
-   /* Form Container */
-.form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 80vh;
-    padding: 20px;
-    background-color: #f4f4f4;
+/* Form Container */
+.employee-form-container {
+    max-width: 550px;
+    margin: 50px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
 }
 
-/* Centered Form */
-.centered-form {
-    width: 100%;
-    max-width: 500px;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* Form Title */
+.form-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+/* Form Layout */
+.employee-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Form Group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
 /* Labels */
-.centered-form label {
+.form-group label {
+    font-size: 15px;
     font-weight: bold;
     color: #333;
-    font-size: 16px;
-    margin-bottom: 5px;
-    display: block;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
 }
 
-/* Input & Textarea Fields */
-.centered-form input,
-.centered-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+/* Required Asterisk */
+.required {
+    color: red;
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+/* Input Fields */
+.employee-form input,
+.employee-form textarea {
+    padding: 12px;
     font-size: 14px;
-    background: #f9f9f9;
-    transition: border-color 0.3s ease-in-out;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    width: 100%;
 }
 
 /* Input Focus Effect */
-.centered-form input:focus,
-.centered-form textarea:focus {
+.employee-form input:focus,
+.employee-form textarea:focus {
     border-color: #007bff;
     background: white;
     outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* Textarea */
+.employee-form textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
 /* Submit Button */
-.centered-form button {
-    width: 100%;
+.btn-submit {
     padding: 12px;
-    background-color: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.3s ease-in-out;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-/* Hover Effect for Button */
-.centered-form button:hover {
-    background-color: #0056b3;
+.btn-submit:hover {
+    background: linear-gradient(135deg, #0056b3, #003f7f);
+    transform: scale(1.03);
+    box-shadow: 0 5px 15px rgba(0, 91, 187, 0.3);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .centered-form {
-        width: 90%;
+/* ========================================================
+   🌟 JQUERY DATEPICKER STYLING
+   ======================================================== */
+.ui-datepicker {
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Datepicker Header */
+.ui-datepicker-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 5px 5px 0 0;
+}
+
+/* Datepicker Button Styling */
+.ui-datepicker-prev, .ui-datepicker-next {
+    background: transparent;
+    border: none;
+    color: white;
+}
+
+/* Datepicker Selected Date */
+.ui-datepicker-calendar .ui-state-highlight {
+    background-color: #007bff !important;
+    color: white !important;
+    border-radius: 50%;
+}
+
+/* ========================================================
+   🌟 RESPONSIVE DESIGN
+   ======================================================== */
+@media (max-width: 600px) {
+    .employee-form-container {
+        max-width: 90%;
+        padding: 20px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    .btn-submit {
+        font-size: 14px;
+        padding: 10px;
     }
 }
+

@@ -3,32 +3,60 @@
 {% block title %}Add Employee{% endblock %}
 
 {% block content %}
-<div>
-    
-    <h2 style ="text-align: center;"> Add Employee</h2> 
-    <div class="form-container">
-        <form class="centered-form" method="POST" action="{{ url_for('main.add_employee') }}">
-            <label for="first_name">First Name</label>
+<div class="employee-form-container">
+    <h2 class="form-title">Add Employee</h2>
+
+    <form class="employee-form" method="POST" action="{{ url_for('main.add_employee') }}">
+        
+        <div class="form-group">
+            <label for="first_name">First Name <span class="required">*</span></label>
             <input type="text" id="first_name" name="first_name" required>
-    
-            <label for="last_name">Last Name</label>
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Last Name <span class="required">*</span></label>
             <input type="text" id="last_name" name="last_name" required>
-    
-            <label for="dob">Date of Birth</label>
-            <input type="date" id="dob" name="dob" required>
-    
-            <label for="joining_date">Joining Date</label>
-            <input type="date" id="joining_date" name="joining_date" required>
-    
-            <label for="brp">BRP</label>
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth <span class="required">*</span></label>
+            <input type="text" id="dob" name="dob" class="datepicker" required>
+        </div>
+
+        <div class="form-group">
+            <label for="joining_date">Joining Date <span class="required">*</span></label>
+            <input type="text" id="joining_date" name="joining_date" class="datepicker" required>
+        </div>
+
+        <div class="form-group">
+            <label for="brp">BRP <span class="required">*</span></label>
             <input type="text" id="brp" name="brp" required>
-    
-            <label for="address">Address</label>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address <span class="required">*</span></label>
             <textarea id="address" name="address" rows="4" required></textarea>
-    
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-    
+        </div>
+
+        <button type="submit" class="btn-submit">Submit</button>
+    </form>
 </div>
+
+<!-- Include jQuery and Datepicker Script -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $(".datepicker").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1950:2025",
+            showButtonPanel: true
+        });
+    });
+</script>
 {% endblock %}
+
