@@ -94,6 +94,7 @@ html, body {
     margin: 0;
     overflow: hidden;
     overflow-y: scroll;
+    background-color: black;
 }
 
 .login-container {
@@ -117,6 +118,7 @@ html, body {
     text-align: center;
     width: 80%;
     max-width: 400px;  /* Max width for the login form */
+    color: rgb(190, 171, 63);
 }
 
 input, button {
@@ -128,7 +130,7 @@ input, button {
 }
 
 button {
-    background-color: #4CAF50;
+    background-color:rgb(200, 178, 55);
     color: white;
     border: none;
     cursor: pointer;

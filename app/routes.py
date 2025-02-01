@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 from .models import Admin, Employee, Attendance, Report
-
+from datetime import datetime
 # Create a Blueprint
 main = Blueprint('main', __name__)
 
@@ -127,49 +127,59 @@ def delete_employee(employee_id):
 
 ### ---------- ATTENDANCE ROUTES ---------- ###
 
+from datetime import datetime
+
 @main.route('/attendance', methods=['GET', 'POST'])
 @login_required
 def attendance():
     if request.method == 'POST':
         employee_id = request.form.get('employee_id')
         action = request.form.get('action')
-        custom_time = request.form.get('custom_time')
-
-        if custom_time:
-            action_time = datetime.strptime(custom_time, '%Y-%m-%dT%H:%M')
-            action_time = UK_TIMEZONE.localize(action_time)
-        else:
-            action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)
-
+        custom_time = request.form.get('custom_time')  # Custom time from form
+        
+        record = Attendance.query.filter_by(employee_id=employee_id, clock_out=None).first()
         employee = Employee.query.get_or_404(employee_id)
 
-        if action == 'clock_in':
-            last_record = Attendance.query.filter_by(employee_id=employee_id, clock_out=None).first()
+        if custom_time:
+            try:
+                # Try parsing with 'T' separator
+                action_time = datetime.strptime(custom_time, '%Y-%m-%dT%H:%M')
+            except ValueError:
+                try:
+                    # Try parsing with space separator (fallback)
+                    action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    flash("Invalid time format. Please use YYYY-MM-DDTHH:MM.", "danger")
+                    return redirect(url_for('main.attendance'))
 
-            if last_record:
-                flash(f'{employee.first_name} {employee.last_name} is already clocked in! Please clock out first.', 'warning')
+        else:
+            action_time = datetime.now()
+
+        if action == 'clock_in' and not record:
+            db.session.add(Attendance(employee_id=employee_id, clock_in=action_time))
+            db.session.commit()
+            flash(f'{employee.first_name} {employee.last_name} has clocked in successfully!', 'success')
+
+        elif action == 'clock_out' and record:
+            record.clock_out = action_time
+            break_time = request.form.get('break_time')
+            if break_time:
+                record.break_time = timedelta(seconds=int(break_time))
+            if record.break_time:
+                record.total_hours = record.clock_out - record.clock_in - record.break_time
             else:
-                break_duration = Attendance.calculate_break_time(employee_id, action_time)
-                new_record = Attendance(employee_id=employee_id, clock_in=action_time, break_time=break_duration)
-                db.session.add(new_record)
-                db.session.commit()
-                flash(f'{employee.first_name} {employee.last_name} clocked in at {action_time.strftime("%Y-%m-%d %H:%M:%S")}', 'success')
+                record.total_hours = record.clock_out - record.clock_in
+            db.session.commit()
+            flash(f'{employee.first_name} {employee.last_name} has clocked out successfully!', 'success')
 
-        elif action == 'clock_out':
-            record = Attendance.query.filter_by(employee_id=employee_id, clock_out=None).first()
+        else:
+            flash('Invalid action or no record found', 'danger')
 
-            if record is None:
-                flash(f'Error: No active clock-in record found for {employee.first_name} {employee.last_name}!', 'danger')
-            else:
-                record.clock_out = action_time
-                record.total_work_hours = record.clock_out - record.clock_in - record.break_time
-                db.session.commit()
-                flash(f'{employee.first_name} {employee.last_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")}', 'success')
-
-        return redirect(url_for('main.attendance'))
+        return redirect(url_for('main.dashboard'))
 
     employees = Employee.query.all()
     return render_template('attendance.html', employees=employees)
+
 
 ### ---------- ATTENDANCE REPORTS ---------- ###
 
