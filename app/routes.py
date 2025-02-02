@@ -7,6 +7,8 @@ import pytz
 import pandas as pd
 from .models import Admin, Employee, Attendance, Report
 from datetime import datetime
+
+
 # Create a Blueprint
 main = Blueprint('main', __name__)
 
@@ -127,7 +129,7 @@ def delete_employee(employee_id):
 
 ### ---------- ATTENDANCE ROUTES ---------- ###
 
-from datetime import datetime
+
 
 @main.route('/attendance', methods=['GET', 'POST'])
 @login_required
@@ -135,42 +137,53 @@ def attendance():
     if request.method == 'POST':
         employee_id = request.form.get('employee_id')
         action = request.form.get('action')
-        custom_time = request.form.get('custom_time')  # Custom time from form
+        custom_time = request.form.get('custom_time')
         
         record = Attendance.query.filter_by(employee_id=employee_id, clock_out=None).first()
         employee = Employee.query.get_or_404(employee_id)
 
+        uk_tz = pytz.timezone('Europe/London')
+
         if custom_time:
             try:
-                # Try parsing with 'T' separator
                 action_time = datetime.strptime(custom_time, '%Y-%m-%dT%H:%M')
             except ValueError:
                 try:
-                    # Try parsing with space separator (fallback)
                     action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M:%S')
                 except ValueError:
-                    flash("Invalid time format. Please use YYYY-MM-DDTHH:MM.", "danger")
-                    return redirect(url_for('main.attendance'))
-
+                    try:
+                        action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M')
+                    except ValueError:
+                        flash("Invalid time format. Please use YYYY-MM-DDTHH:MM or YYYY-MM-DD HH:MM.", "danger")
+                        return redirect(url_for('main.attendance'))
+            action_time = uk_tz.localize(action_time)
         else:
-            action_time = datetime.now()
+            action_time = datetime.now(uk_tz)
 
         if action == 'clock_in' and not record:
             db.session.add(Attendance(employee_id=employee_id, clock_in=action_time))
             db.session.commit()
-            flash(f'{employee.first_name} {employee.last_name} has clocked in successfully!', 'success')
+            flash(f'{employee.first_name} {employee.last_name} clocked in at {action_time.strftime("%Y-%m-%d %H:%M:%S")}', 'success')
 
         elif action == 'clock_out' and record:
             record.clock_out = action_time
+
+            if record.clock_in.tzinfo is None:
+                record.clock_in = uk_tz.localize(record.clock_in)
+            if record.clock_out.tzinfo is None:
+                record.clock_out = uk_tz.localize(record.clock_out)
+
             break_time = request.form.get('break_time')
             if break_time:
                 record.break_time = timedelta(seconds=int(break_time))
+            
             if record.break_time:
                 record.total_hours = record.clock_out - record.clock_in - record.break_time
             else:
                 record.total_hours = record.clock_out - record.clock_in
+
             db.session.commit()
-            flash(f'{employee.first_name} {employee.last_name} has clocked out successfully!', 'success')
+            flash(f'{employee.first_name} {employee.last_name} clocked in at {record.clock_in.strftime("%Y-%m-%d %H:%M:%S")} and clocked out at {record.clock_out.strftime("%Y-%m-%d %H:%M:%S")}. Total hours worked: {record.total_hours}', 'success')
 
         else:
             flash('Invalid action or no record found', 'danger')

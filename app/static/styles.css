@@ -10,10 +10,11 @@
 
 /* Center the main container */
 .container {
-    max-width: 1431px;
+    max-width: 2000px;
     border-radius: 10px;
     padding-left: var(--bs-gutter-x,0rem);
     padding-right: var(--bs-gutter-x,0rem);
+    background-color: w;
 }
 
 /* Center Headings */
@@ -61,44 +62,21 @@
 /* ========================================================
    🌟 FLASH MESSAGES (SUCCESS & ERROR ALERTS)
    ======================================================== */
-.flash-messages {
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.alert {
-    padding: 10px;
-    margin: 5px auto;
-    border-radius: 5px;
-    font-size: 16px;
-    width: 80%;
-}
-
-.alert-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.alert-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-/* ========================================================
-   🌟 LOGIN PAGE STYLES
-   ======================================================== */
+/* Set body and html to ensure no overflow */
 /* Set body and html to ensure no overflow */
 html, body {
-    height: 100%;
+    /* height: 100%; */
     margin: 0;
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+    background-color: white; /* Change background only for login page */
     overflow: hidden;
-    overflow-y: scroll;
-    background-color: black;
 }
 
 .login-container {
     display: flex;
+    width: 100vw;
     height: 100vh;
 }
 
@@ -107,44 +85,284 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex: 1;
 }
 
 .left-side {
-    width: 40%;  /* 40% width for the login form */
-     /* Optional, can be customized */
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: black;
 }
 
 .login-form {
     text-align: center;
-    width: 80%;
-    max-width: 400px;  /* Max width for the login form */
-    color: rgb(190, 171, 63);
+    width: 100%;
+    max-width: 400px;  /* Max width for better readability */
+    background: white; /* Ensure the form stands out */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 input, button {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
     border-radius: 5px;
     border: 1px solid #ccc;
 }
 
 button {
-    background-color:rgb(200, 178, 55);
+    background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.right-side {
-    width: 60%;  /* 60% width for the logo */
-/* Optional, can be customized */
-}
-
-.right-side img {
-    max-width: 100%;
-    max-height: 100%;
+.left-side img {
+    max-width: 80%; /* Ensure image fits properly */
+    max-height: 80%;
     object-fit: contain;
+}
+
+/* ========================================================
+   🌟 EMPLOYEE LIST PAGE - MODERN TABLE DESIGN
+   ======================================================== */
+
+/* Employee List Container */
+.employee-list-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Modern Employee Table */
+.employee-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Creates space between rows */
+}
+
+/* Table Headers */
+.employee-table th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+    border-radius: 5px 5px 0 0;
+}
+
+/* Table Rows with Card-like Effect */
+.employee-table tr {
+    background: white;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+}
+
+/* Table Cells */
+.employee-table td {
+    padding: 15px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Table Hover Effect */
+.employee-table tr:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+}
+
+/* Actions Column */
+.actions-column {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Edit Button */
+.btn-primary {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    min-height: 41px;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+}
+
+/* Delete Button */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Font Awesome Icons */
+.fas {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    .employee-table {
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+
+    .actions-column {
+        flex-direction: column;
+    }
+}
+/* ========================================================
+   🌟 EMPLOYEE LIST PAGE - MODERN TABLE DESIGN
+   ======================================================== */
+
+/* Employee List Container */
+.employee-list-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Modern Employee Table */
+.employee-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Creates space between rows */
+}
+
+/* Table Headers */
+.employee-table th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+    border-radius: 5px 5px 0 0;
+}
+
+/* Table Rows with Card-like Effect */
+.employee-table tr {
+    background: white;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+}
+
+/* Table Cells */
+.employee-table td {
+    padding: 15px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Table Hover Effect */
+.employee-table tr:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+}
+
+/* Actions Column */
+.actions-column {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Edit Button */
+.btn-primary {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+}
+
+/* Delete Button */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Font Awesome Icons */
+.fas {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    .employee-table {
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+
+    .actions-column {
+        flex-direction: column;
+    }
 }
 
 /* ========================================================
@@ -740,6 +958,9 @@ button {
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
+    float: middle;
+    width: 100%;
+    overflow: auto;
 }
 
 /* Form Title */

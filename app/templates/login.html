@@ -4,9 +4,14 @@
 
 {% block content %}
 <div class="login-container">
-     <img src="{{ url_for('static', filename='logo.png') }}" alt="Cozy Cup Logo">
-     
+
+    <!-- Left side (Logo) -->
     <div class="left-side">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Cozy Cup Logo">
+    </div>
+
+    <!-- Right side (Login Form) -->
+    <div class="right-side">
         <div class="login-form">
             <h2>Cozy Cup Admin Login</h2>
             <form method="POST" action="{{ url_for('main.login') }}">
@@ -16,9 +21,5 @@
             </form>
         </div>
     </div>
-
-
-        
-
 </div>
 {% endblock %}
