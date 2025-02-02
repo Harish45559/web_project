@@ -961,6 +961,7 @@ button {
     float: middle;
     width: 100%;
     overflow: auto;
+    max-height: 80vh;
 }
 
 /* Form Title */
