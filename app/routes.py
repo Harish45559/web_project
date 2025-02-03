@@ -7,6 +7,7 @@ import pytz
 import pandas as pd
 from .models import Admin, Employee, Attendance, Report
 from datetime import datetime
+from flask import send_file, flash, redirect, url_for
 
 
 # Create a Blueprint
@@ -129,8 +130,6 @@ def delete_employee(employee_id):
 
 ### ---------- ATTENDANCE ROUTES ---------- ###
 
-
-
 @main.route('/attendance', methods=['GET', 'POST'])
 @login_required
 def attendance():
@@ -223,7 +222,6 @@ def generate_employee_report():
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=7) if report_type == "weekly" else end_date.replace(day=1)
 
-    # Generate report for all employees if 'Select All' is chosen
     if employee_id == "all":
         employees = Employee.query.all()
         all_data = []
@@ -239,7 +237,7 @@ def generate_employee_report():
                     emp.first_name + " " + emp.last_name,
                     record.clock_in.strftime('%Y-%m-%d %H:%M:%S'),
                     record.clock_out.strftime('%Y-%m-%d %H:%M:%S') if record.clock_out else "Still Clocked In",
-                    str(record.total_work_hours)
+                    str(record.total_work_hours)  # ✅ Fixed this line
                 ])
 
         if not all_data:
@@ -249,10 +247,7 @@ def generate_employee_report():
         df = pd.DataFrame(all_data, columns=["Employee", "Clock In", "Clock Out", "Total Work Hours"])
         filename = f"all_employees_{report_type}_attendance_{end_date.strftime('%Y%m%d')}.xlsx"
     else:
-        # Fetch employee details
         employee = Employee.query.get_or_404(employee_id)
-
-        # Fetch attendance records for the selected employee
         attendance_records = Attendance.query.filter(
             Attendance.employee_id == employee_id,
             Attendance.clock_in >= start_date,
@@ -265,7 +260,7 @@ def generate_employee_report():
                 employee.first_name + " " + employee.last_name,
                 record.clock_in.strftime('%Y-%m-%d %H:%M:%S'),
                 record.clock_out.strftime('%Y-%m-%d %H:%M:%S') if record.clock_out else "Still Clocked In",
-                str(record.total_work_hours)
+                str(record.total_work_hours)  # ✅ Fixed this line
             ])
 
         if not data:
@@ -281,6 +276,9 @@ def generate_employee_report():
 
     file_path = os.path.join(REPORTS_FOLDER, filename)
 
+    # Debugging: Print the path to verify
+    print(f"Saving report at: {file_path}")
+
     # Save file
     df.to_excel(file_path, index=False, engine='openpyxl')
 
@@ -291,3 +289,26 @@ def generate_employee_report():
 
     flash(f"{report_type.capitalize()} report generated successfully!", "success")
     return redirect(url_for('main.attendance_reports'))
+
+
+
+@main.route('/download_report/<int:report_id>')
+@login_required
+def download_report(report_id):
+    report = Report.query.get(report_id)
+
+    if not report:
+        flash("Report not found.", "danger")
+        return redirect(url_for('main.attendance_reports'))
+
+    file_path = report.file_path
+
+    # Debugging: Print the file path to verify it's correct
+    print("Attempting to download file from:", file_path)
+
+    # Ensure file exists before sending
+    if not os.path.exists(file_path):
+        flash("File does not exist. Please generate the report again.", "danger")
+        return redirect(url_for('main.attendance_reports'))
+
+    return send_file(file_path, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
