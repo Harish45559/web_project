@@ -135,6 +135,8 @@ button {
     object-fit: contain;
 }
 
+
+
 /* ========================================================
    🌟 EMPLOYEE LIST PAGE - MODERN TABLE DESIGN
    ======================================================== */
@@ -202,6 +204,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    text-decoration: none;
     text-align: center;
     display: inline-flex;
     justify-content: center;
@@ -213,7 +216,6 @@ button {
     background-color: #28a745;
     color: white;
     border: none;
-    min-height: 41px;
 }
 
 .btn-primary:hover {
@@ -250,6 +252,54 @@ button {
     }
 }
 
+
+/* ========================================================
+   🌟 EMPLOYEE FORMS (ADD/EDIT)
+   ======================================================== */
+   .form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+.centered-form {
+    width: 100%;
+    max-width: 500px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+   
+}
+
+/* Input & Select Fields */
+.centered-form input,
+.centered-form select,
+.centered-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Submit Button */
+.centered-form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.centered-form button:hover {
+    background-color: #555;
+}
 /* ========================================================
    🌟 EDIT EMPLOYEE FORM - MODERN CARD DESIGN
    ======================================================== */
@@ -324,6 +374,7 @@ button {
         width: 90%;
     }
 }
+
 
 
 /* ========================================================
@@ -424,184 +475,131 @@ button {
 
 
 /* ========================================================
-   🌟 ATTENDANCE REPORT SCREEN - REVAMPED DESIGN
+   🌟 STYLED TABLE (REPORTS PAGE)
    ======================================================== */
-
-/* Full Page Container */
-.report-container {
-    max-width: 1000px;
-    margin: auto;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-}
-
-/* Heading */
-.centered-heading {
-    text-align: center;
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-/* Card-like Report Form */
-.report-card {
+   .styled-table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
     background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.styled-table th, .styled-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.styled-table th {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+}
+
+.styled-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.styled-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Report Buttons */
+.report-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
     margin-bottom: 20px;
 }
 
-/* Report Form */
+/* Button Styling */
+.btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Font Awesome Icons */
+.fas {
+    margin-right: 5px;
+}
+
+
+/* ========================================================
+   🌟 REPORT FORM STYLING (SELECT EMPLOYEE)
+   ======================================================== */
 .report-form {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Form Group (Ensures Labels Are Above Dropdowns) */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    width: 48%;
-}
-
-/* Labels */
-.form-group label {
+.report-form label {
     font-weight: bold;
     font-size: 16px;
-    margin-bottom: 5px;
 }
 
-/* Dropdown Styling */
-.form-group select {
+.report-form select {
     padding: 10px;
     font-size: 14px;
     border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #fff;
+    border: 1px solid #ddd;
 }
 
-/* Generate Report Button */
-.button-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.btn-generate {
-    padding: 8px 14px;
+.report-form button {
+    padding: 10px 15px;
     font-size: 14px;
     border-radius: 5px;
     background-color: #007bff;
     color: white;
     border: none;
     cursor: pointer;
-    transition: background 0.3s ease-in-out;
 }
 
-.btn-generate:hover {
+.report-form button:hover {
     background-color: #0056b3;
-}
-
-/* ========================================================
-   🌟 ATTENDANCE REPORT TABLE - MODERN DESIGN
-   ======================================================== */
-.report-table-container {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Table */
-.styled-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    text-align: center;
-}
-
-/* Table Header Styling */
-.styled-table th {
-    background-color: #007bff;
-    color: white;
-    padding: 12px;
-    font-size: 16px;
-    text-transform: uppercase;
-    border-bottom: 2px solid #0056b3;
-}
-
-/* Table Row Styling */
-.styled-table tr {
-    background: white;
-    transition: 0.3s ease-in-out;
-}
-
-/* Alternating Row Colors */
-.styled-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-/* Row Hover Effect */
-.styled-table tr:hover {
-    background-color: #e9ecef;
-}
-
-/* Table Cell Styling */
-.styled-table td {
-    padding: 14px;
-    border-bottom: 1px solid #ddd;
-    font-size: 14px;
-    color: #333;
-}
-
-/* No Reports Available Row */
-.no-reports {
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-    color: #555;
-    padding: 15px;
-}
-
-/* Download Button Styling */
-.btn-download {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 5px;
-    font-size: 13px;
-    transition: background 0.3s ease-in-out;
-    text-decoration: none;
-}
-
-.btn-download:hover {
-    background-color: #218838;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .report-form {
-        flex-direction: column;
-    }
-
-    .form-group {
-        width: 100%;
-    }
-
-    .button-container {
-        text-align: center;
-    }
 }
 
 

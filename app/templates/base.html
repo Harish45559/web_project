@@ -31,7 +31,8 @@
     <!-- Flash Messages (Bootstrap Toast Notification) -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div id="toast-container" class="position-fixed top-50 start-50 translate-middle">
+        <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+
                 {% for category, message in messages %}
                     <div class="toast align-items-center text-white bg-{{ 'success' if category == 'success' else 'danger' }} border-0 show" role="alert">
                         <div class="d-flex">

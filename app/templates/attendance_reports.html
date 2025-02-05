@@ -3,75 +3,57 @@
 {% block title %}Attendance Reports{% endblock %}
 
 {% block content %}
-<div class="report-container">
-    <h2 class="centered-heading">Attendance Reports</h2>
+<h2 class="centered-heading">Attendance Reports</h2>
 
-    <!-- Report Form in a Card Layout -->
-    <div class="report-card">
-        <form method="POST" action="{{ url_for('main.generate_employee_report') }}" class="report-form">
-            <!-- Select Employee -->
-            <div class="form-group">
-                <label for="employee_id">Select Employee:</label>
-                <select name="employee_id" required>
-                    <option value="" disabled selected>Select an Employee</option>
-                    <option value="all">Select All</option>
-                    {% if employees %}
-                        {% for employee in employees %}
-                        <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
-                        {% endfor %}
-                    {% else %}
-                        <option value="" disabled>No Employees Available</option>
-                    {% endif %}
-                </select>
-            </div>
+<!-- Form to Generate Employee-Specific Report -->
+<form method="POST" action="{{ url_for('main.generate_employee_report') }}" class="report-form">
+    <label for="employee_id">Select Employee:</label>
+    <select name="employee_id" required>
+        <option value="" disabled selected>Select an Employee</option>
+        {% for employee in employees %}
+        <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
+        {% endfor %}
+    </select>
 
-            <!-- Select Report Type -->
-            <div class="form-group">
-                <label for="report_type">Select Report Type:</label>
-                <select name="report_type" required>
-                    <option value="" disabled selected>Select Report Type</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
-            </div>
+    <label for="report_type">Select Report Type:</label>
+    <select name="report_type" required>
+        <option value="" disabled selected>Select Report Type</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+    </select>
 
-            <!-- Generate Button -->
-            <div class="button-container">
-                <button type="submit" class="btn-generate"><i class="fas fa-file-alt"></i> Generate</button>
-            </div>
-        </form>
-    </div>
+    <button type="submit" class="btn btn-primary">Generate Report</button>
+</form>
 
-    <!-- Report Table -->
-    <div class="report-table-container">
-        <table class="styled-table">
-            <thead>
-                <tr>
-                    <th>Report Type</th>
-                    <th>Generated On</th>
-                    <th>Download</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if reports %}
-                    {% for report in reports %}
-                    <tr>
-                        <td>{{ report.report_type }}</td>
-                        <td>{{ report.generated_on.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                        <td>
-                            <a href="{{ url_for('main.download_report', report_id=report.id) }}" class="btn-download">
-                                <i class="fas fa-download"></i> Download
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="3" class="no-reports">No reports available</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-</div>
+<!-- Existing Report Table -->
+<table class="styled-table">
+    <thead>
+        <tr>
+            <th>Report Type</th>
+            <th>Generated On</th>
+            <th>Download</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report.report_type }}</td>
+            <td>{{ report.generated_on.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>
+                <a href="{{ url_for('main.download_report', report_id=report.id) }}" class="btn btn-success">
+                    <i class="fas fa-download"></i> Download
+                </a>
+            </td>
+            <td>
+                <form method="POST" action="{{ url_for('main.delete_report', report_id=report.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this report?')">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

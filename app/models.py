@@ -10,10 +10,11 @@ def load_user(user_id):
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
-    clock_in = db.Column(db.DateTime(timezone=True), nullable=True)
-    clock_out = db.Column(db.DateTime(timezone=True), nullable=True)
-    break_time = db.Column(db.Interval, default=timedelta(seconds=0))
-    total_work_hours = db.Column(db.Interval, default=timedelta(seconds=0))
+    clock_in = db.Column(db.DateTime, nullable=True)
+    clock_out = db.Column(db.DateTime, nullable=True)
+    total_work_hours = db.Column(db.Interval, nullable=True)  # Ensure it is an Interval type
+    break_time = db.Column(db.Interval, nullable=True)
+
 
     employee = db.relationship('Employee', backref=db.backref('attendance_records', lazy=True))
 
@@ -61,7 +62,7 @@ class Employee(db.Model):
 UK_TIMEZONE = pytz.timezone('Europe/London')
 
 class Report(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Ensure auto-increment
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     report_type = db.Column(db.String(50), nullable=False)
-    generated_on = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    file_path = db.Column(db.String(255), nullable=False)  # Path to stored file
+    file_path = db.Column(db.String(255), nullable=False, unique=True)
+    generated_on = db.Column(db.DateTime, default=datetime.utcnow)  # Ensure timestamp is saved

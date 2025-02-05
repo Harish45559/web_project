@@ -19,7 +19,7 @@
                 {% endfor %}
             </select>
 
-            <!-- Adjust Time Checkbox -->
+            <!-- Adjust Time Checkbox (Left-Aligned Label) -->
             <div class="checkbox-container">
                 <label for="adjust_time_in">Adjust Time</label>
                 <input type="checkbox" id="adjust_time_in" name="adjust_time">
@@ -27,7 +27,7 @@
 
             <div id="time_input_in" class="custom-time-container">
                 <label for="custom_time_in">Select Time & Date</label>
-                <input type="text" id="custom_time_in" name="custom_time" class="datetimepicker">
+                <input type="datetime-local" id="custom_time_in" name="custom_time">
             </div>
 
             <button type="submit" class="btn btn-success">Clock In</button>
@@ -47,7 +47,7 @@
                 {% endfor %}
             </select>
 
-            <!-- Adjust Time Checkbox -->
+            <!-- Adjust Time Checkbox (Left-Aligned Label) -->
             <div class="checkbox-container">
                 <label for="adjust_time_out">Adjust Time</label>
                 <input type="checkbox" id="adjust_time_out" name="adjust_time">
@@ -55,7 +55,7 @@
 
             <div id="time_input_out" class="custom-time-container">
                 <label for="custom_time_out">Select Time & Date</label>
-                <input type="text" id="custom_time_out" name="custom_time" class="datetimepicker">
+                <input type="datetime-local" id="custom_time_out" name="custom_time">
             </div>
 
             <button type="submit" class="btn btn-danger">Clock Out</button>
@@ -63,33 +63,28 @@
     </div>
 </div>
 
-<!-- Include jQuery and DateTimePicker Script -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css">
-
-<!-- DateTime Picker Initialization -->
 <script>
-    $(document).ready(function () {
-        $(".datetimepicker").datetimepicker({
-            dateFormat: "yy-mm-dd",
-            timeFormat: "HH:mm:ss",
-            controlType: "select",
-            oneLine: true,
-            showButtonPanel: true,
-            changeMonth: true,
-            changeYear: true
-        });
+    document.addEventListener("DOMContentLoaded", function () {
+        var adjustTimeIn = document.getElementById("adjust_time_in");
+        var adjustTimeOut = document.getElementById("adjust_time_out");
 
-        $("#adjust_time_in").change(function () {
-            $("#time_input_in").toggle(this.checked);
-        });
+        if (adjustTimeIn) {
+            adjustTimeIn.addEventListener("change", function () {
+                var timeInput = document.getElementById("time_input_in");
+                if (timeInput) {
+                    timeInput.style.display = this.checked ? "block" : "none";
+                }
+            });
+        }
 
-        $("#adjust_time_out").change(function () {
-            $("#time_input_out").toggle(this.checked);
-        });
+        if (adjustTimeOut) {
+            adjustTimeOut.addEventListener("change", function () {
+                var timeInput = document.getElementById("time_input_out");
+                if (timeInput) {
+                    timeInput.style.display = this.checked ? "block" : "none";
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
