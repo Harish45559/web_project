@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 from .models import Admin, Employee, Attendance, Report
-
 from flask import send_file, flash, redirect, url_for
 
+import pandas as pd
 
 # Create a Blueprint
 main = Blueprint('main', __name__)
@@ -145,7 +145,7 @@ def attendance():
         custom_time = request.form.get('custom_time')
 
         if custom_time:
-            action_time = datetime.strptime(custom_time, '%Y-%m-%dT%H:%M')
+            action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M')
             action_time = UK_TIMEZONE.localize(action_time)
         else:
             action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)
@@ -158,8 +158,7 @@ def attendance():
             if last_record:
                 flash(f'{employee.first_name} {employee.last_name} is already clocked in! Please clock out first.', 'warning')
             else:
-                break_duration = Attendance.calculate_break_time(employee_id, action_time)
-                new_record = Attendance(employee_id=employee_id, clock_in=action_time, break_time=break_duration)
+                new_record = Attendance(employee_id=employee_id, clock_in=action_time)
                 db.session.add(new_record)
                 db.session.commit()
                 flash(f'{employee.first_name} {employee.last_name} clocked in at {action_time.strftime("%Y-%m-%d %H:%M:%S")}', 'success')
@@ -171,7 +170,7 @@ def attendance():
                 flash(f'Error: No active clock-in record found for {employee.first_name} {employee.last_name}!', 'danger')
             else:
                 record.clock_out = action_time
-                record.total_work_hours = record.clock_out - record.clock_in - record.break_time
+                record.total_work_hours = record.clock_out - record.clock_in
                 db.session.commit()
                 flash(f'{employee.first_name} {employee.last_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")}', 'success')
 
@@ -205,32 +204,40 @@ def generate_employee_report():
         flash("Please select an employee and report type!", "danger")
         return redirect(url_for('main.attendance_reports'))
 
-    # Fetch employee details
-    employee = Employee.query.get_or_404(employee_id)
-
     # Define report start date
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=7) if report_type == "weekly" else end_date.replace(day=1)
 
-    # Fetch attendance records only for the selected employee
-    attendance_records = Attendance.query.filter(
-        Attendance.employee_id == employee_id,
-        Attendance.clock_in >= start_date,
-        Attendance.clock_out != None
-    ).all()
+    # If "All Employees" is selected
+    if employee_id == "all":
+        attendance_records = Attendance.query.filter(
+            Attendance.clock_in >= start_date,
+            Attendance.clock_out != None
+        ).all()
+    else:
+        # Fetch employee details
+        employee = Employee.query.get_or_404(int(employee_id))  # Convert ID to integer
+
+        # Fetch attendance records for the selected employee
+        attendance_records = Attendance.query.filter(
+            Attendance.employee_id == employee.id,
+            Attendance.clock_in >= start_date,
+            Attendance.clock_out != None
+        ).all()
 
     # Convert data to a DataFrame
     data = []
     for record in attendance_records:
+        emp = Employee.query.get(record.employee_id)  # Fetch employee details
         data.append([
-            employee.first_name + " " + employee.last_name,
+            emp.first_name + " " + emp.last_name,
             record.clock_in.strftime('%Y-%m-%d %H:%M:%S'),
             record.clock_out.strftime('%Y-%m-%d %H:%M:%S') if record.clock_out else "Still Clocked In",
-            str(record.total_work_hours)
+            str(record.total_work_hours)  # FIXED: Changed to total_work_hours
         ])
 
     if not data:
-        flash(f"No attendance records found for {employee.first_name} {employee.last_name}.", "warning")
+        flash("No attendance records found!", "warning")
         return redirect(url_for('main.attendance_reports'))
 
     df = pd.DataFrame(data, columns=["Employee", "Clock In", "Clock Out", "Total Work Hours"])
@@ -240,19 +247,20 @@ def generate_employee_report():
         os.makedirs(REPORTS_FOLDER)
 
     # Generate filename
-    filename = f"{employee.first_name}_{employee.last_name}_{report_type}_attendance_{end_date.strftime('%Y%m%d')}.xlsx"
+    filename = f"{'All_Employees' if employee_id == 'all' else emp.first_name + '_' + emp.last_name}_{report_type}_attendance_{end_date.strftime('%Y%m%d')}.xlsx"
     file_path = os.path.join(REPORTS_FOLDER, filename)
 
     # Save file
     df.to_excel(file_path, index=False, engine='openpyxl')
 
     # Save report info in DB
-    new_report = Report(report_type=f"{report_type} ({employee.first_name} {employee.last_name})", file_path=file_path)
+    new_report = Report(report_type=f"{report_type} ({'All Employees' if employee_id == 'all' else emp.first_name + ' ' + emp.last_name})", file_path=file_path)
     db.session.add(new_report)
     db.session.commit()
 
-    flash(f"{report_type.capitalize()} report for {employee.first_name} {employee.last_name} generated!", "success")
+    flash(f"{report_type.capitalize()} report generated successfully!", "success")
     return redirect(url_for('main.attendance_reports'))
+
 
 
 @main.route('/download_report/<int:report_id>')
@@ -285,3 +293,30 @@ def delete_report(report_id):
     
     flash("Report deleted successfully!", "success")
     return redirect(url_for('main.attendance_reports'))
+
+
+
+
+@main.route('/view_report/<int:report_id>')
+@login_required
+def view_report(report_id):
+    report = Report.query.get_or_404(report_id)
+    absolute_path = os.path.abspath(report.file_path)
+
+    # Check if file exists
+    if not os.path.exists(absolute_path):
+        flash("Error: Report file not found!", "danger")
+        return redirect(url_for('main.attendance_reports'))
+
+    # Read Excel file into a DataFrame
+    try:
+        df = pd.read_excel(absolute_path, engine='openpyxl')
+
+        # Convert DataFrame to HTML
+        table_html = df.to_html(classes='table table-striped', index=False)
+        
+        return render_template('view_report.html', report_name=report.report_type, table_html=table_html)
+
+    except Exception as e:
+        flash(f"Error reading the report: {str(e)}", "danger")
+        return redirect(url_for('main.attendance_reports'))

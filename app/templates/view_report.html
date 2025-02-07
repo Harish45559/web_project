@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}View Report{% endblock %}
+
+{% block content %}
+<h2 style="text-align: center; margin-top: 20px; font-size: 28px; color: #000;">{{ report_name }}</h2>
+
+<!-- Table Container -->
+<div style="max-width: 95%; margin: 20px auto; overflow-x: auto;">
+    <!-- Styled Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background: white; 
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px; overflow: hidden;">
+        {{ table_html|safe }}
+    </table>
+</div>
+
+<!-- Back Button -->
+<a href="{{ url_for('main.attendance_reports') }}" 
+   style="display: block; width: 200px; margin: 20px auto; padding: 10px; background-color: #333; 
+          color: white; text-align: center; border-radius: 5px; text-decoration: none; font-size: 16px; 
+          transition: 0.3s;">
+    Back to Reports
+</a>
+{% endblock %}
