@@ -7,8 +7,9 @@ import pytz
 import pandas as pd
 from .models import Admin, Employee, Attendance, Report
 from flask import send_file, flash, redirect, url_for
-
+from .models import Employee, Attendance
 import pandas as pd
+from flask_login import login_required
 
 # Create a Blueprint
 main = Blueprint('main', __name__)
@@ -144,11 +145,12 @@ def attendance():
         action = request.form.get('action')
         custom_time = request.form.get('custom_time')
 
+        # Get UK current time or parse custom input
         if custom_time:
             action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M')
-            action_time = UK_TIMEZONE.localize(action_time)
+            action_time = UK_TIMEZONE.localize(action_time) if action_time.tzinfo is None else action_time.astimezone(UK_TIMEZONE)
         else:
-            action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)
+            action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)  # ✅ Convert to UK time properly
 
         employee = Employee.query.get_or_404(employee_id)
 
@@ -158,10 +160,15 @@ def attendance():
             if last_record:
                 flash(f'{employee.first_name} {employee.last_name} is already clocked in! Please clock out first.', 'warning')
             else:
-                new_record = Attendance(employee_id=employee_id, clock_in=action_time)
+                break_time = Attendance.calculate_break_time(employee_id, action_time)
+                new_record = Attendance(
+                    employee_id=employee_id,
+                    clock_in=action_time,
+                    break_time=break_time  # ✅ Set correct break time
+                )
                 db.session.add(new_record)
                 db.session.commit()
-                flash(f'{employee.first_name} {employee.last_name} clocked in at {action_time.strftime("%Y-%m-%d %H:%M:%S")}', 'success')
+                flash(f'{employee.first_name} {employee.last_name} clocked in at {action_time.strftime("%Y-%m-%d %H:%M:%S")} UK Time', 'success')
 
         elif action == 'clock_out':
             record = Attendance.query.filter_by(employee_id=employee_id, clock_out=None).first()
@@ -170,14 +177,16 @@ def attendance():
                 flash(f'Error: No active clock-in record found for {employee.first_name} {employee.last_name}!', 'danger')
             else:
                 record.clock_out = action_time
-                record.total_work_hours = record.clock_out - record.clock_in
+                record.total_work_hours = record.calculate_total_work_hours()  # ✅ Recalculate total work hours
                 db.session.commit()
-                flash(f'{employee.first_name} {employee.last_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")}', 'success')
+                flash(f'{employee.first_name} {employee.last_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")} UK Time', 'success')
 
         return redirect(url_for('main.attendance'))
 
     employees = Employee.query.all()
     return render_template('attendance.html', employees=employees)
+    
+
 
 ### ---------- ATTENDANCE REPORTS ---------- ###
 

@@ -15,6 +15,8 @@
     padding-left: var(--bs-gutter-x,0rem);
     padding-right: var(--bs-gutter-x,0rem);
     background-color: w;
+
+    
 }
 
 /* Center Headings */
@@ -133,7 +135,14 @@ button {
     max-width: 80%; /* Ensure image fits properly */
     max-height: 80%;
     object-fit: contain;
+    border: none;
+    outline: none;
+    background-color: black;
+    padding: 0;
+    margin: 0;
 }
+    
+
 
 
 
@@ -484,6 +493,7 @@ button {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
+    
 }
 
 .report-container:hover {
@@ -764,57 +774,5 @@ button {
     background: linear-gradient(135deg, #0056b3, #003f7f);
     transform: scale(1.03);
     box-shadow: 0 5px 15px rgba(0, 91, 187, 0.3);
-}
-
-/* ========================================================
-   🌟 JQUERY DATEPICKER STYLING
-   ======================================================== */
-.ui-datepicker {
-    font-size: 14px;
-    background-color: white;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Datepicker Header */
-.ui-datepicker-header {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-    border-radius: 5px 5px 0 0;
-}
-
-/* Datepicker Button Styling */
-.ui-datepicker-prev, .ui-datepicker-next {
-    background: transparent;
-    border: none;
-    color: white;
-}
-
-/* Datepicker Selected Date */
-.ui-datepicker-calendar .ui-state-highlight {
-    background-color: #007bff !important;
-    color: white !important;
-    border-radius: 50%;
-}
-
-/* ========================================================
-   🌟 RESPONSIVE DESIGN
-   ======================================================== */
-@media (max-width: 600px) {
-    .employee-form-container {
-        max-width: 90%;
-        padding: 20px;
-    }
-
-    .form-group label {
-        font-size: 14px;
-    }
-
-    .btn-submit {
-        font-size: 14px;
-        padding: 10px;
-    }
 }
 
