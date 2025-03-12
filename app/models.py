@@ -1,14 +1,14 @@
 from . import db, login_manager
 from flask_login import UserMixin
 from datetime import datetime, timedelta
-import pytz  # Import pytz for timezone conversion
+import pytz
+
+# Define UK Timezone
+UK_TIMEZONE = pytz.timezone('Europe/London')
 
 @login_manager.user_loader
 def load_user(user_id):
     return Admin.query.get(int(user_id))
-
-# Define UK Timezone
-UK_TIMEZONE = pytz.timezone('Europe/London')
 
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,13 +31,13 @@ class Attendance(db.Model):
     def get_uk_time(dt):
         """Ensures the datetime is stored in UK timezone."""
         if dt is None:
-            dt = datetime.utcnow()  # Get current UTC time
+            dt = datetime.utcnow()
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=pytz.utc)  # Assign UTC timezone
+            dt = pytz.utc.localize(dt)  # Assign UTC timezone
         return dt.astimezone(UK_TIMEZONE)  # Convert to UK Time
 
     def calculate_total_work_hours(self):
-        """Calculates total work hours excluding break time"""
+        """Calculates total work hours excluding break time."""
         if self.clock_in and self.clock_out:
             work_duration = self.clock_out - self.clock_in
             return work_duration - self.break_time
@@ -45,7 +45,7 @@ class Attendance(db.Model):
 
     @staticmethod
     def calculate_break_time(employee_id, clock_in_time):
-        """Calculates the break time if the gap between last clock-out and new clock-in is greater than 5 minutes"""
+        """Calculates break time if the gap between last clock-out and new clock-in is greater than 5 minutes."""
         last_record = Attendance.query.filter(
             Attendance.employee_id == employee_id,
             Attendance.clock_out.isnot(None)

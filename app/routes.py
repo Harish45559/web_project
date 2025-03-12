@@ -147,10 +147,13 @@ def attendance():
 
         # Get UK current time or parse custom input
         if custom_time:
-            action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M')
-            action_time = UK_TIMEZONE.localize(action_time) if action_time.tzinfo is None else action_time.astimezone(UK_TIMEZONE)
+            action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M')  # Parse user input
+            if action_time.tzinfo is None:
+                action_time = UK_TIMEZONE.localize(action_time)  # Convert naive datetime to UK time
+            else:
+                action_time = action_time.astimezone(UK_TIMEZONE)  # Ensure UK time
         else:
-            action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)  # ✅ Convert to UK time properly
+            action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)  # Convert UTC → UK time
 
         employee = Employee.query.get_or_404(employee_id)
 
@@ -163,8 +166,8 @@ def attendance():
                 break_time = Attendance.calculate_break_time(employee_id, action_time)
                 new_record = Attendance(
                     employee_id=employee_id,
-                    clock_in=action_time,
-                    break_time=break_time  # ✅ Set correct break time
+                    clock_in=action_time,  # ✅ Ensure UK time is stored
+                    break_time=break_time
                 )
                 db.session.add(new_record)
                 db.session.commit()
@@ -176,7 +179,7 @@ def attendance():
             if record is None:
                 flash(f'Error: No active clock-in record found for {employee.first_name} {employee.last_name}!', 'danger')
             else:
-                record.clock_out = action_time
+                record.clock_out = action_time  # ✅ Ensure UK time is stored
                 record.total_work_hours = record.calculate_total_work_hours()  # ✅ Recalculate total work hours
                 db.session.commit()
                 flash(f'{employee.first_name} {employee.last_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")} UK Time', 'success')
@@ -185,7 +188,7 @@ def attendance():
 
     employees = Employee.query.all()
     return render_template('attendance.html', employees=employees)
-    
+
 
 
 ### ---------- ATTENDANCE REPORTS ---------- ###
@@ -208,6 +211,9 @@ def attendance_reports():
 def generate_employee_report():
     employee_id = request.form.get('employee_id')
     report_type = request.form.get('report_type')  # 'weekly' or 'monthly'
+
+    print(f"🔍 Employee ID: {employee_id}, Report Type: {report_type}")  # Debugging step
+
 
     if not employee_id or not report_type:
         flash("Please select an employee and report type!", "danger")

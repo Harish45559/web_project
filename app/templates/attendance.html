@@ -67,22 +67,15 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Initialize Flatpickr on all datetime pickers
         flatpickr(".datetimepicker", {
             enableTime: true,
-            dateFormat: "Y-m-d H:i",
+            dateFormat: "Y-m-d H:i",  // ✅ Change 'T' separator to space
             time_24hr: true,
             defaultDate: new Date(),
         });
-
-        // Toggle time input visibility when checkbox is checked
-        document.getElementById("adjust_time_in").addEventListener("change", function () {
-            document.getElementById("time_input_in").style.display = this.checked ? "block" : "none";
-        });
-
-        document.getElementById("adjust_time_out").addEventListener("change", function () {
-            document.getElementById("time_input_out").style.display = this.checked ? "block" : "none";
-        });
     });
 </script>
+
+
+
 {% endblock %}
