@@ -765,4 +765,24 @@ button {
     transform: scale(1.03);
     box-shadow: 0 5px 15px rgba(0, 91, 187, 0.3);
 }
+.table-container {
+    max-height: 400px; /* Adjust height as needed */
+    overflow-y: auto;
+    border: 1px solid #ddd; /* Optional: adds a border around the table */
+    border-radius: 8px;
+    padding: 10px;
+}
 
+/* Ensure the table header remains fixed while scrolling */
+.table-container thead {
+    position: sticky;
+    top: 0;
+    background-color: #333; /* Match header background */
+    z-index: 2;
+}
+
+/* Optional: Add a shadow effect when scrolling */
+.table-container:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+ 
