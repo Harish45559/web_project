@@ -1,26 +1,18 @@
-{% extends "base.html" %}
-
-{% block title %}Stored Reports{% endblock %}
-
-{% block content %}
-<h1 class="centered-heading">Stored Attendance Reports</h1>
-
-<table>
-    <thead>
-        <tr>
-            <th>Report Type</th>
-            <th>Generated On</th>
-            <th>Download</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for report in reports %}
-        <tr>
-            <td>{{ report.report_type }}</td>
-            <td>{{ report.generated_on.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-            <td><a href="{{ url_for('main.download_report', report_id=report.id) }}" class="btn btn-primary" download>Download</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
+<div class="container">
+    <h2>Monthly Report (Employee Name)</h2>
+    <div class="report-table-container">
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Clock In</th>
+                    <th>Clock Out</th>
+                    <th>Total Work Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Your report data rows go here -->
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -2,10 +2,15 @@ from . import db, login_manager
 from flask_login import UserMixin
 from datetime import datetime, timedelta
 import pytz  # Import pytz for timezone conversion
+from . import bcrypt
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Admin.query.get(int(user_id))
+    admin = Admin.query.get(int(user_id))
+    if admin:
+        return admin
+    return Employee.query.get(int(user_id))
+
 
 # Define UK Timezone
 UK_TIMEZONE = pytz.timezone('Europe/London')
@@ -17,15 +22,21 @@ class Attendance(db.Model):
     clock_out = db.Column(db.DateTime, nullable=True)
     total_work_hours = db.Column(db.Interval, nullable=True)
     break_time = db.Column(db.Interval, nullable=True)
-
+    latitude = db.Column(db.Float, nullable=True)   # ✅ Add this field
+    longitude = db.Column(db.Float, nullable=True)  # ✅ Add this field
+    address = db.Column(db.String(500), nullable=True)  # ✅ Add this field
+  
     employee = db.relationship('Employee', backref=db.backref('attendance_records', lazy=True))
 
-    def __init__(self, employee_id, clock_in=None, clock_out=None, break_time=None):
+    def __init__(self, employee_id, clock_in=None, clock_out=None, break_time=None, latitude=None, longitude=None, address=None):
         self.employee_id = employee_id
         self.clock_in = self.get_uk_time(clock_in)
         self.clock_out = self.get_uk_time(clock_out) if clock_out else None
         self.break_time = break_time if break_time else timedelta(seconds=0)
         self.total_work_hours = timedelta(seconds=0)
+        self.latitude = latitude  # ✅ Assign location
+        self.longitude = longitude  # ✅ Assign location
+        self.address = address  # ✅ Store full address
 
     @staticmethod
     def get_uk_time(dt):
@@ -62,7 +73,13 @@ class Admin(db.Model, UserMixin):
     username = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(150), nullable=False)
 
-class Employee(db.Model):
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
+class Employee(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(150), nullable=False)
     last_name = db.Column(db.String(150), nullable=False)
@@ -70,6 +87,15 @@ class Employee(db.Model):
     joining_date = db.Column(db.Date, nullable=False)
     brp = db.Column(db.String(100), nullable=False)
     address = db.Column(db.Text, nullable=False)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    role = db.Column(db.String(50), nullable=False, default="employee")
+
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
 
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

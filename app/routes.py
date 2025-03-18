@@ -10,6 +10,8 @@ from flask import send_file, flash, redirect, url_for
 from .models import Employee, Attendance
 import pandas as pd
 from flask_login import login_required
+from flask_login import current_user
+from functools import wraps
 
 # Create a Blueprint
 main = Blueprint('main', __name__)
@@ -21,6 +23,17 @@ UK_TIMEZONE = pytz.timezone('Europe/London')
 def get_uk_time():
     """Returns the current time in the UK timezone"""
     return datetime.now(pytz.utc).astimezone(UK_TIMEZONE)
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or isinstance(current_user, Employee):
+            flash("You do not have permission to access this page.", "danger")
+            return redirect(url_for('main.attendance'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 
 ### ---------- HOME & AUTHENTICATION ROUTES ---------- ###
@@ -38,15 +51,22 @@ def login():
         password = request.form.get('password')
 
         user = Admin.query.filter_by(username=username).first()
+        if not user:
+            user = Employee.query.filter_by(username=username).first()
 
-        if user and bcrypt.check_password_hash(user.password, password):
+        if user and user.check_password(password):
             login_user(user)
             flash('Login successful!', 'success')
-            return redirect(url_for('main.dashboard'))
-        else:
-            flash('Invalid username or password.', 'danger')
+
+            if isinstance(user, Admin):
+                return redirect(url_for('main.dashboard'))
+            else:
+                return redirect(url_for('main.attendance'))  # Redirect employees to Attendance
+
+        flash('Invalid username or password.', 'danger')
 
     return render_template('login.html')
+
 
 @main.route('/logout')
 @login_required
@@ -57,6 +77,7 @@ def logout():
 
 @main.route('/dashboard')
 @login_required
+@admin_required
 def dashboard():
     return render_template('dashboard.html')
 
@@ -64,7 +85,10 @@ def dashboard():
 
 @main.route('/add_employee', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def add_employee():
+    # Admin can add employees
+    # Code remains unchanged
     if request.method == 'POST':
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
@@ -72,6 +96,8 @@ def add_employee():
         joining_date = request.form.get('joining_date')
         brp = request.form.get('brp')
         address = request.form.get('address')
+        username = request.form.get('username')
+        password = request.form.get('password')
 
         new_employee = Employee(
             first_name=first_name,
@@ -79,8 +105,10 @@ def add_employee():
             dob=dob,
             joining_date=joining_date,
             brp=brp,
-            address=address
+            address=address,
+            username=username
         )
+        new_employee.set_password(password)  # Hash the password
         db.session.add(new_employee)
         db.session.commit()
 
@@ -91,6 +119,7 @@ def add_employee():
 
 @main.route('/list_employees')
 @login_required
+@admin_required
 def list_employees():
     employees = Employee.query.all()
     return render_template('list_employees.html', employees=employees)
@@ -140,17 +169,29 @@ def delete_employee(employee_id):
 @main.route('/attendance', methods=['GET', 'POST'])
 @login_required
 def attendance():
+    if isinstance(current_user, Employee):  
+        employees = [current_user]  # Employees see only their own name
+    else:
+        employees = Employee.query.all()  # Admin sees all employees
+
     if request.method == 'POST':
         employee_id = request.form.get('employee_id')
         action = request.form.get('action')
         custom_time = request.form.get('custom_time')
+        latitude = request.form.get('latitude')  # ✅ Capture latitude
+        longitude = request.form.get('longitude')  # ✅ Capture longitude
+        address = request.form.get('address')  
+
+        # ✅ Convert empty strings to None
+        latitude = float(latitude) if latitude else None
+        longitude = float(longitude) if longitude else None
 
         # Get UK current time or parse custom input
         if custom_time:
             action_time = datetime.strptime(custom_time, '%Y-%m-%d %H:%M')
             action_time = UK_TIMEZONE.localize(action_time) if action_time.tzinfo is None else action_time.astimezone(UK_TIMEZONE)
         else:
-            action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)  # ✅ Convert to UK time properly
+            action_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE)
 
         employee = Employee.query.get_or_404(employee_id)
 
@@ -164,11 +205,14 @@ def attendance():
                 new_record = Attendance(
                     employee_id=employee_id,
                     clock_in=action_time,
-                    break_time=break_time  # ✅ Set correct break time
+                    break_time=break_time,
+                    latitude=latitude,  # ✅ Now always a float or None
+                    longitude=longitude,
+                    address=address  # ✅ Now always a float or None
                 )
                 db.session.add(new_record)
                 db.session.commit()
-                flash(f'{employee.first_name} {employee.last_name} clocked in at {action_time.strftime("%Y-%m-%d %H:%M:%S")} UK Time', 'success')
+                flash(f'{employee.first_name} clocked in at {action_time.strftime("%Y-%m-%d %H:%M:%S")} (Lat: {latitude}, Lon: {longitude})', 'success')
 
         elif action == 'clock_out':
             record = Attendance.query.filter_by(employee_id=employee_id, clock_out=None).first()
@@ -177,14 +221,18 @@ def attendance():
                 flash(f'Error: No active clock-in record found for {employee.first_name} {employee.last_name}!', 'danger')
             else:
                 record.clock_out = action_time
-                record.total_work_hours = record.calculate_total_work_hours()  # ✅ Recalculate total work hours
+                record.total_work_hours = record.calculate_total_work_hours()
+                record.latitude = latitude  # ✅ Now always a float or None
+                record.longitude = longitude  # ✅ Now always a float or None
+                record.address = address 
                 db.session.commit()
-                flash(f'{employee.first_name} {employee.last_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")} UK Time', 'success')
+                flash(f'{employee.first_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")} (Lat: {latitude}, Lon: {longitude})', 'success')
 
         return redirect(url_for('main.attendance'))
 
-    employees = Employee.query.all()
     return render_template('attendance.html', employees=employees)
+
+
 
 
 ### ---------- ATTENDANCE REPORTS ---------- ###
@@ -331,3 +379,24 @@ def view_report(report_id):
     except Exception as e:
         flash(f"Error reading the report: {str(e)}", "danger")
         return redirect(url_for('main.attendance_reports'))
+
+
+@main.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        new_password = request.form.get('new_password')
+
+        user = Admin.query.filter_by(username=username).first()
+        if not user:
+            user = Employee.query.filter_by(username=username).first()
+
+        if user:
+            user.set_password(new_password)  # Hash the new password
+            db.session.commit()
+            flash('Password has been reset successfully!', 'success')
+            return redirect(url_for('main.login'))
+        else:
+            flash('User not found!', 'danger')
+
+    return render_template('reset_password.html')
