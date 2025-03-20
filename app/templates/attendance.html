@@ -103,17 +103,32 @@ function getLocation(event, type) {
                 async function (position) {
                     let lat = position.coords.latitude;
                     let lon = position.coords.longitude;
-                        // ✅ Fetch Address using Reverse Geocoding
+
+
+                    console.log(`📍 Lat: ${lat}, Lon: ${lon}`); // ✅ Debug log
+
+                    // Wait for address to be fetched before proceeding
                     let address = await getAddress(lat, lon);
 
+                    if (address === "Fetching address..." || address === "Address not found") {
+                        alert("⚠ Address could not be retrieved. Please try again.");
+                        return;
+                    }
+
+                    console.log(`📌 Address: ${address}`);  
+
+                    
                     if (type === "in") {
                         document.getElementById("latitude-in").value = lat;
                         document.getElementById("longitude-in").value = lon;
                         document.getElementById("lat-display-in").innerText = lat;
                         document.getElementById("lon-display-in").innerText = lon;
  
+                        setTimeout(() => {
                         document.getElementById("address-in").value = address;
                         document.getElementById("address-display-in").innerText = address;
+                        }, 1000);  // ✅ Ensures update after 1 second
+
 
                     } else if (type === "out") {
                         document.getElementById("latitude-out").value = lat;
@@ -122,8 +137,11 @@ function getLocation(event, type) {
                         document.getElementById("lon-display-out").innerText = lon;
 
 
-                        document.getElementById("address-out").value = address;
-                        document.getElementById("address-display-out").innerText = address;
+                        setTimeout(() => {
+                        document.getElementById("address-in").value = address;
+                        document.getElementById("address-display-in").innerText = address;
+                        }, 1000);  // ✅ Ensures update after 1 second
+
                     } 
                     
                     event.target.submit();
@@ -138,23 +156,29 @@ function getLocation(event, type) {
     }
 
     async function getAddress(lat, lon) {
-        const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";  // Replace with your Google API Key
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+    const apiKey = "AIzaSyAd2iwc0skDn6NyLWNFpnnkiHZFV44vY8U"; // Replace with your valid API key
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
 
-        try {
-            let response = await fetch(url);
-            let data = await response.json();
+    console.log(`🔍 Fetching address for: ${lat}, ${lon}`);  // ✅ Debug log
 
-            if (data.status === "OK") {
-                return data.results[0].formatted_address; // Get the formatted address
-            } else {
-                return "Address not found";
-            }
-        } catch (error) {
-            console.error("Geocoding error:", error);
-            return "Address fetch error";
+    try {
+        let response = await fetch(url);
+        let data = await response.json();
+
+        console.log("📡 Google API Response:", data);  // ✅ Log the full API response
+
+        if (data.status === "OK" && data.results.length > 0) {
+            return data.results[0].formatted_address;  // ✅ Return the first valid address
+        } else {
+            console.error("⚠ Google Maps API Error:", data);
+            return "Address not found";
         }
+    } catch (error) {
+        console.error("❌ Geocoding error:", error);
+        return "Address fetch error";
     }
+}
+
 // Function to Set Saved Location on Page Load
 function setLocationFromStorage() {
     let lat = localStorage.getItem("latitude");

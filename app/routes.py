@@ -180,7 +180,6 @@ def attendance():
         custom_time = request.form.get('custom_time')
         latitude = request.form.get('latitude')  # ✅ Capture latitude
         longitude = request.form.get('longitude')  # ✅ Capture longitude
-        address = request.form.get('address')  
 
         # ✅ Convert empty strings to None
         latitude = float(latitude) if latitude else None
@@ -207,8 +206,7 @@ def attendance():
                     clock_in=action_time,
                     break_time=break_time,
                     latitude=latitude,  # ✅ Now always a float or None
-                    longitude=longitude,
-                    address=address  # ✅ Now always a float or None
+                    longitude=longitude  # ✅ Now always a float or None
                 )
                 db.session.add(new_record)
                 db.session.commit()
@@ -224,7 +222,6 @@ def attendance():
                 record.total_work_hours = record.calculate_total_work_hours()
                 record.latitude = latitude  # ✅ Now always a float or None
                 record.longitude = longitude  # ✅ Now always a float or None
-                record.address = address 
                 db.session.commit()
                 flash(f'{employee.first_name} clocked out at {action_time.strftime("%Y-%m-%d %H:%M:%S")} (Lat: {latitude}, Lon: {longitude})', 'success')
 

@@ -24,11 +24,11 @@ class Attendance(db.Model):
     break_time = db.Column(db.Interval, nullable=True)
     latitude = db.Column(db.Float, nullable=True)   # ✅ Add this field
     longitude = db.Column(db.Float, nullable=True)  # ✅ Add this field
-    address = db.Column(db.String(500), nullable=True)  # ✅ Add this field
   
+
     employee = db.relationship('Employee', backref=db.backref('attendance_records', lazy=True))
 
-    def __init__(self, employee_id, clock_in=None, clock_out=None, break_time=None, latitude=None, longitude=None, address=None):
+    def __init__(self, employee_id, clock_in=None, clock_out=None, break_time=None, latitude=None, longitude=None):
         self.employee_id = employee_id
         self.clock_in = self.get_uk_time(clock_in)
         self.clock_out = self.get_uk_time(clock_out) if clock_out else None
@@ -36,7 +36,6 @@ class Attendance(db.Model):
         self.total_work_hours = timedelta(seconds=0)
         self.latitude = latitude  # ✅ Assign location
         self.longitude = longitude  # ✅ Assign location
-        self.address = address  # ✅ Store full address
 
     @staticmethod
     def get_uk_time(dt):
@@ -96,7 +95,6 @@ class Employee(db.Model, UserMixin):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
-
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     report_type = db.Column(db.String(50), nullable=False)
