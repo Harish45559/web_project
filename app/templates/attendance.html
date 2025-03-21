@@ -16,6 +16,7 @@
             <input type="hidden" name="address" id="address-in">
 
             <select name="employee_id" required>
+                <option value="all">Select an Employee </option>
                 {% for employee in employees %}
                     <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
                 {% endfor %}
@@ -52,6 +53,7 @@
 
 
             <select name="employee_id" required>
+                <option value="all">Select an Employee </option>
                 {% for employee in employees %}
                     <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
                 {% endfor %}
@@ -78,72 +80,76 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    flatpickr(".datetimepicker", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i",
-        time_24hr: true,
-        defaultDate: new Date(),
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr(".datetimepicker", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            defaultDate: new Date(),
+        });
+    
+        document.getElementById("adjust_time_in").addEventListener("change", function () {
+            document.getElementById("time_input_in").style.display = this.checked ? "block" : "none";
+        });
+    
+        document.getElementById("adjust_time_out").addEventListener("change", function () {
+            document.getElementById("time_input_out").style.display = this.checked ? "block" : "none";
+        });
+    
+        // Set stored location if available
+        setLocationFromStorage();
     });
-
-    document.getElementById("adjust_time_in").addEventListener("change", function () {
-        document.getElementById("time_input_in").style.display = this.checked ? "block" : "none";
-    });
-
-    document.getElementById("adjust_time_out").addEventListener("change", function () {
-        document.getElementById("time_input_out").style.display = this.checked ? "block" : "none";
-    });
-});
-
-function getLocation(event, type) {
+    
+    // Function to Get Location (Runs Only Once Per Session)
+    function getLocation(event, type) {
         event.preventDefault();
-
+    
+        // Ask for location only once per session
+        if (sessionStorage.getItem("locationGranted") === "true") {
+            useStoredLocation(type, event);
+            return;
+        }
+    
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 async function (position) {
                     let lat = position.coords.latitude;
                     let lon = position.coords.longitude;
-
-
+    
                     console.log(`📍 Lat: ${lat}, Lon: ${lon}`); // ✅ Debug log
-
-                    // Wait for address to be fetched before proceeding
+    
+                    // Store in session and local storage
+                    sessionStorage.setItem("locationGranted", "true");
+                    localStorage.setItem("latitude", lat);
+                    localStorage.setItem("longitude", lon);
+    
+                    // Fetch and set address
                     let address = await getAddress(lat, lon);
-
+    
                     if (address === "Fetching address..." || address === "Address not found") {
                         alert("⚠ Address could not be retrieved. Please try again.");
                         return;
                     }
-
+    
                     console.log(`📌 Address: ${address}`);  
-
-                    
+    
                     if (type === "in") {
                         document.getElementById("latitude-in").value = lat;
                         document.getElementById("longitude-in").value = lon;
                         document.getElementById("lat-display-in").innerText = lat;
                         document.getElementById("lon-display-in").innerText = lon;
- 
-                        setTimeout(() => {
                         document.getElementById("address-in").value = address;
                         document.getElementById("address-display-in").innerText = address;
-                        }, 1000);  // ✅ Ensures update after 1 second
-
-
+    
                     } else if (type === "out") {
                         document.getElementById("latitude-out").value = lat;
                         document.getElementById("longitude-out").value = lon;
                         document.getElementById("lat-display-out").innerText = lat;
                         document.getElementById("lon-display-out").innerText = lon;
-
-
-                        setTimeout(() => {
-                        document.getElementById("address-in").value = address;
-                        document.getElementById("address-display-in").innerText = address;
-                        }, 1000);  // ✅ Ensures update after 1 second
-
-                    } 
-                    
+                        document.getElementById("address-out").value = address;
+                        document.getElementById("address-display-out").innerText = address;
+                    }
+    
                     event.target.submit();
                 },
                 function (error) {
@@ -154,50 +160,72 @@ function getLocation(event, type) {
             alert("❌ Geolocation is not supported by this browser.");
         }
     }
-
+    
+    // Function to Get Address from Google API
     async function getAddress(lat, lon) {
-    const apiKey = "AIzaSyAd2iwc0skDn6NyLWNFpnnkiHZFV44vY8U"; // Replace with your valid API key
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
-
-    console.log(`🔍 Fetching address for: ${lat}, ${lon}`);  // ✅ Debug log
-
-    try {
-        let response = await fetch(url);
-        let data = await response.json();
-
-        console.log("📡 Google API Response:", data);  // ✅ Log the full API response
-
-        if (data.status === "OK" && data.results.length > 0) {
-            return data.results[0].formatted_address;  // ✅ Return the first valid address
-        } else {
-            console.error("⚠ Google Maps API Error:", data);
-            return "Address not found";
+        const apiKey = "AIzaSyAd2iwc0skDn6NyLWNFpnnkiHZFV44vY8U"; // Replace with your valid API key
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+    
+        console.log(`🔍 Fetching address for: ${lat}, ${lon}`);  // ✅ Debug log
+    
+        try {
+            let response = await fetch(url);
+            let data = await response.json();
+    
+            console.log("📡 Google API Response:", data);  // ✅ Log the full API response
+    
+            if (data.status === "OK" && data.results.length > 0) {
+                return data.results[0].formatted_address;  // ✅ Return the first valid address
+            } else {
+                console.error("⚠ Google Maps API Error:", data);
+                return "Address not found";
+            }
+        } catch (error) {
+            console.error("❌ Geocoding error:", error);
+            return "Address fetch error";
         }
-    } catch (error) {
-        console.error("❌ Geocoding error:", error);
-        return "Address fetch error";
     }
-}
-
-// Function to Set Saved Location on Page Load
-function setLocationFromStorage() {
-    let lat = localStorage.getItem("latitude");
-    let lon = localStorage.getItem("longitude");
-
-    if (lat && lon) {
-        document.getElementById("latitude-in").value = lat;
-        document.getElementById("longitude-in").value = lon;
-        document.getElementById("lat-display-in").innerText = lat;
-        document.getElementById("lon-display-in").innerText = lon;
-
-        document.getElementById("latitude-out").value = lat;
-        document.getElementById("longitude-out").value = lon;
-        document.getElementById("lat-display-out").innerText = lat;
-        document.getElementById("lon-display-out").innerText = lon;
+    
+    // Function to Set Stored Location on Page Load
+    function setLocationFromStorage() {
+        let lat = localStorage.getItem("latitude");
+        let lon = localStorage.getItem("longitude");
+    
+        if (lat && lon) {
+            document.getElementById("latitude-in").value = lat;
+            document.getElementById("longitude-in").value = lon;
+            document.getElementById("lat-display-in").innerText = lat;
+            document.getElementById("lon-display-in").innerText = lon;
+    
+            document.getElementById("latitude-out").value = lat;
+            document.getElementById("longitude-out").value = lon;
+            document.getElementById("lat-display-out").innerText = lat;
+            document.getElementById("lon-display-out").innerText = lon;
+        }
     }
-}
-
-document.addEventListener("DOMContentLoaded", setLocationFromStorage);
-</script>
+    
+    // Function to Use Stored Location Instead of Asking Again
+    function useStoredLocation(type, event) {
+        let lat = localStorage.getItem("latitude");
+        let lon = localStorage.getItem("longitude");
+    
+        if (lat && lon) {
+            if (type === "in") {
+                document.getElementById("latitude-in").value = lat;
+                document.getElementById("longitude-in").value = lon;
+                document.getElementById("lat-display-in").innerText = lat;
+                document.getElementById("lon-display-in").innerText = lon;
+            } else if (type === "out") {
+                document.getElementById("latitude-out").value = lat;
+                document.getElementById("longitude-out").value = lon;
+                document.getElementById("lat-display-out").innerText = lat;
+                document.getElementById("lon-display-out").innerText = lon;
+            }
+        } else {
+            console.log("📌 No stored location found. Requesting new location...");
+            getLocation(event, type);
+        }
+    }
+    </script>
 
 {% endblock %}

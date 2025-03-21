@@ -14,13 +14,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.c om/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     {% if current_user.is_authenticated %}
     <header>
-        <h1 class="header-title">Cozy Cup</h1>
-       
+        <h1 class="header-title">Cozy Cup</h1> 
+        <div class="header-logo"> 
+            <img src="/static/download.png" alt="Cozy Cup Logo">
+        </div>
+        
         <nav class="navbar">
             {% if current_user.__class__.__name__ == 'Admin' or current_user.role == 'admin' %}
                 <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
@@ -32,9 +35,6 @@
             <a href="{{ url_for('main.attendance') }}">Attendance</a>
             <a href="{{ url_for('main.logout') }}">Logout</a>
         </nav>
-
-        <img src="{{ url_for('static', filename='download.png') }}" alt="Cozy Cup Logo" class="header-logo">
-
     </header>
     {% endif %}
     

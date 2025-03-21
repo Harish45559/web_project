@@ -28,36 +28,56 @@
 /* ========================================================
    🌟 HEADER & NAVIGATION BAR
    ======================================================== */
-.header-title {
-    text-align: center;
-    color: white;
+   header {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers content horizontally */
+    padding: 10px 20px;
     background-color: #333;
-    padding: 20px;
-    font-size: 24px;
+    color: white;
+    position: relative;
 }
 
-/* Navigation Bar */
+.header-title {
+    font-size: 24px;
+    margin: 0;
+    color: #CCA353;
+    position: absolute;
+    left: 20px; /* Keep title on the left */
+}
+
+.header-logo {
+    width: 50px;
+    height: auto;
+    position: absolute;
+    right: 20px; /* Keep logo on the right */
+}
+
+.header-logo img {
+    width: 100%;
+    height: auto;
+}
+
 .navbar {
     display: flex;
-    justify-content: center;
-    background-color: #333;
-    padding: 10px;
-    gap: 20px;
-    flex-wrap: wrap;
+    justify-content: center; /* Centering the nav items */
+    gap: 30px; /* Spacing between items */
+    flex-grow: 1; /* Makes sure navbar takes space to center properly */
 }
 
 .navbar a {
-    color: white;
     text-decoration: none;
+    color: white;
     font-size: 16px;
-    padding: 10px;
-    transition: background 0.3s;
+    padding: 10px 15px;
+    transition: 0.3s;
 }
 
 .navbar a:hover {
-    background-color: #444;
+    background-color: #555;
     border-radius: 5px;
 }
+
 
 /* ========================================================
    🌟 FLASH MESSAGES (SUCCESS & ERROR ALERTS)
@@ -92,8 +112,8 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex: 2; /* Make left side take more space */
 }
-
 .right-side {
     display: flex;
     justify-content: center;
@@ -129,10 +149,26 @@ button {
     font-weight: bold;
 }
 
+.Forgot-Password, button{ 
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: center;
+
+}
+
 .left-side img {
-    max-width: 80%; /* Ensure image fits properly */
-    max-height: 80%;
-    object-fit: contain;
+    width: 50vw; /* Cover full width */
+    height: 110vh; /* Cover full height */
+    object-fit: cover; /* Stretch to cover while maintaining aspect ratio */
 }
 
 
@@ -782,11 +818,15 @@ button {
 }
 
 
-/* Logo styling inside base.html */
 .header-logo {
     position: absolute;
-    top: 10px;
-    right: 20px;
-    width: 80px; /* Adjust as needed */
+    top: -10px;  /* Adjust to position from the top */
+    right: 10px; /* Adjust to position from the right */
+    width: 90px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.header-logo img {
+    width: 100%;  /* Ensure the image scales inside the div */
     height: auto;
 }
