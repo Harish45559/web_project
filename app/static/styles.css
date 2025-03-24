@@ -91,6 +91,7 @@ html, body {
     align-items: center;
     background-color: white; /* Change background only for login page */
     overflow: hidden;
+    
 }
 
 .login-container {
@@ -829,25 +830,4 @@ button {
 .header-logo img {
     width: 100%;  /* Ensure the image scales inside the div */
     height: auto;
-}
-
-.actions-column {
-    display: flex;
-    gap: 5px;  /* Space between buttons */
-    justify-content: center;
-    align-items: center;
-}
-
-.action-btn, .generate-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    border-radius: 4px;
-}
-
-.action-btn i, .generate-btn i {
-    font-size: 14px;  /* Adjust icon size */
 }

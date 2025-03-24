@@ -5,23 +5,21 @@
 {% block content %}
 <h2 class="report-heading">{{ report_name }}</h2>
 
-<!-- Table Container with Vertical Scroll -->
+<!-- Table Container -->
 <div class="report-container">
-    <div class="table-wrapper">
-        <table class="report-table">
-            <thead>
-                <tr>
-                    <th>Employee</th>
-                    <th>Clock In</th>
-                    <th>Clock Out</th>
-                    <th>Total Work Hours</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{ table_html|safe }}
-            </tbody>
-        </table>
-    </div>
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Clock In</th>
+                <th>Clock Out</th>
+                <th>Total Work Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ table_html|safe }}
+        </tbody>
+    </table>
 </div>
 
 <!-- Back Button -->
@@ -39,41 +37,33 @@
     .report-container {
         max-width: 90%;
         margin: 20px auto;
+        overflow-x: auto;
         background: white;
         padding: 15px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
     }
 
-    .table-wrapper {
-        max-height: 400px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-    }
-
     .report-table {
         width: 100%;
         border-collapse: collapse;
+        margin-top: 10px;
     }
 
     .report-table th, .report-table td {
         border: 1px solid #ddd;
-        padding: 12px;
-        text-align: left;
-        white-space: nowrap;
+        padding: 10px;
+        text-align: center;
     }
 
     .report-table th {
         background-color: #007bff;
         color: white;
         font-weight: bold;
-        position: sticky;
-        top: 0;
-        z-index: 2;
     }
 
     .report-table tr:nth-child(even) {
-        background-color: #f8f9fa;
+        background-color: #f2f2f2;
     }
 
     .btn-back {
