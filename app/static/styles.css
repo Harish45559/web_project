@@ -430,10 +430,18 @@ button {
     gap: 20px;
     flex-wrap: wrap;
     margin-top: 20px;
+
+    /* Enable horizontal scrolling */
+    overflow-x: auto;  /* Allow scrolling */
+    flex-wrap: nowrap; /* Prevent blocks from wrapping */
+    padding-bottom: 10px; /* Avoid scrollbar overlap */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
 }
 
-/* Smaller attendance blocks */
+/* Ensure attendance sections are scrollable */
 .attendance-section {
+    flex: 0 0 auto; /* Prevent flex items from shrinking */
+    min-width: 300px; /* Match existing block size */
     width: 300px;  /* Reduced width */
     background: white;
     padding: 15px;
@@ -505,6 +513,16 @@ button {
 .flatpickr-input {
     width: 100%;
     text-align: center;
+}
+
+/* Optional: Style scrollbar for better UX */
+.attendance-container::-webkit-scrollbar {
+    height: 6px; /* Make scrollbar thin */
+}
+
+.attendance-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 5px;
 }
 
 
@@ -830,4 +848,26 @@ button {
 .header-logo img {
     width: 100%;  /* Ensure the image scales inside the div */
     height: auto;
+}
+
+
+.attendance-container {
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent line breaks */
+    max-width: 100%; /* Ensure it fits the screen */
+}
+
+
+@media (max-width: 768px) {
+    .attendance-container {
+        display: block; /* Ensure it stacks properly */
+        overflow-x: scroll; /* Allow touch scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+    }
+}
+
+
+html, body {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 }
