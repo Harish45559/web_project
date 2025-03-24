@@ -831,23 +831,3 @@ button {
     width: 100%;  /* Ensure the image scales inside the div */
     height: auto;
 }
-
-.attendance-container {
-    overflow-x: auto; /* Enable horizontal scrolling */
-    white-space: nowrap; /* Prevent elements from breaking */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-}
-
-.attendance-section {
-    display: inline-block; /* Prevent layout breaking */
-    vertical-align: top;
-    min-width: 300px; /* Prevent sections from shrinking too much */
-}
-
-@media (max-width: 768px) {
-    .attendance-container {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto; /* Ensure horizontal scrolling */
-    }
-}
