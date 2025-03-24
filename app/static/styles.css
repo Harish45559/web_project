@@ -831,3 +831,29 @@ button {
     width: 100%;  /* Ensure the image scales inside the div */
     height: auto;
 }
+
+
+
+.attendance-container {
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent line breaks */
+    max-width: 100%; /* Ensure it fits the screen */
+}
+
+.attendance-section {
+    min-width: 320px; /* Ensure sections are not too small */
+    width: 100%; /* Make sections responsive */
+}
+
+@media (max-width: 768px) {
+    .attendance-container {
+        display: block; /* Ensure it stacks properly */
+        overflow-x: scroll; /* Allow touch scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+    }
+}
+
+html, body {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+}

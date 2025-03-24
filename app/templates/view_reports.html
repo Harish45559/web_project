@@ -1,87 +1,18 @@
-{% extends "base.html" %}
-
-{% block title %}View Report{% endblock %}
-
-{% block content %}
-<h2 class="report-heading">{{ report_name }}</h2>
-
-<!-- Table Container -->
-<div class="report-container">
-    <table class="report-table">
-        <thead>
-            <tr>
-                <th>Employee</th>
-                <th>Clock In</th>
-                <th>Clock Out</th>
-                <th>Total Work Hours</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{ table_html|safe }}
-        </tbody>
-    </table>
+<div class="container">
+    <h2>Monthly Report (Employee Name)</h2>
+    <div class="report-table-container">
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Clock In</th>
+                    <th>Clock Out</th>
+                    <th>Total Work Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Your report data rows go here -->
+            </tbody>
+        </table>
+    </div>
 </div>
-
-<!-- Back Button -->
-<a href="{{ url_for('main.attendance_reports') }}" class="btn-back">Back to Reports</a>
-
-<!-- Custom CSS for Better Layout -->
-<style>
-    .report-heading {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 28px;
-        color: #333;
-    }
-
-    .report-container {
-        max-width: 90%;
-        margin: 20px auto;
-        overflow-x: auto;
-        background: white;
-        padding: 15px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
-
-    .report-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-
-    .report-table th, .report-table td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: center;
-    }
-
-    .report-table th {
-        background-color: #007bff;
-        color: white;
-        font-weight: bold;
-    }
-
-    .report-table tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-
-    .btn-back {
-        display: block;
-        width: 200px;
-        margin: 20px auto;
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        text-align: center;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 16px;
-        transition: 0.3s;
-    }
-
-    .btn-back:hover {
-        background-color: #0056b3;
-    }
-</style>
-{% endblock %}
