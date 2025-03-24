@@ -832,28 +832,22 @@ button {
     height: auto;
 }
 
-
-
 .attendance-container {
     overflow-x: auto; /* Enable horizontal scrolling */
-    white-space: nowrap; /* Prevent line breaks */
-    max-width: 100%; /* Ensure it fits the screen */
+    white-space: nowrap; /* Prevent elements from breaking */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .attendance-section {
-    min-width: 320px; /* Ensure sections are not too small */
-    width: 100%; /* Make sections responsive */
+    display: inline-block; /* Prevent layout breaking */
+    vertical-align: top;
+    min-width: 300px; /* Prevent sections from shrinking too much */
 }
 
 @media (max-width: 768px) {
     .attendance-container {
-        display: block; /* Ensure it stacks properly */
-        overflow-x: scroll; /* Allow touch scrolling */
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto; /* Ensure horizontal scrolling */
     }
-}
-
-html, body {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: auto;
 }
