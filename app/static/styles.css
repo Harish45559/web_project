@@ -853,7 +853,7 @@ button {
 
 .attendance-container {
     overflow-x: auto; /* Enable horizontal scrolling */
-    white-space: nowrap; /* Prevent line breaks */
+    
     max-width: 100%; /* Ensure it fits the screen */
 }
 

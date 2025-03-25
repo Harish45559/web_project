@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from datetime import datetime, timedelta
 import pytz  # Import pytz for timezone conversion
 from . import bcrypt
+from flask_sqlalchemy import SQLAlchemy
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -22,9 +23,8 @@ class Attendance(db.Model):
     clock_out = db.Column(db.DateTime, nullable=True)
     total_work_hours = db.Column(db.Interval, nullable=True)
     break_time = db.Column(db.Interval, nullable=True)
-    latitude = db.Column(db.Float, nullable=True)   # ✅ Add this field
-    longitude = db.Column(db.Float, nullable=True)  # ✅ Add this field
-  
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
 
     employee = db.relationship('Employee', backref=db.backref('attendance_records', lazy=True))
 
@@ -34,8 +34,8 @@ class Attendance(db.Model):
         self.clock_out = self.get_uk_time(clock_out) if clock_out else None
         self.break_time = break_time if break_time else timedelta(seconds=0)
         self.total_work_hours = timedelta(seconds=0)
-        self.latitude = latitude  # ✅ Assign location
-        self.longitude = longitude  # ✅ Assign location
+        self.latitude = latitude
+        self.longitude = longitude
 
     @staticmethod
     def get_uk_time(dt):
@@ -47,23 +47,33 @@ class Attendance(db.Model):
         return dt.astimezone(UK_TIMEZONE)  # Convert to UK Time
 
     def calculate_total_work_hours(self):
-        """Calculates total work hours excluding break time"""
+        """Calculates total work hours even if the shift crosses midnight."""
         if self.clock_in and self.clock_out:
+            # If clock_out is before clock_in, shift spans across midnight
+            if self.clock_out < self.clock_in:
+                self.clock_out += timedelta(days=1)
+
             work_duration = self.clock_out - self.clock_in
             return work_duration - self.break_time
         return timedelta(seconds=0)
 
     @staticmethod
     def calculate_break_time(employee_id, clock_in_time):
-        """Calculates the break time if the gap between last clock-out and new clock-in is greater than 5 minutes"""
-        last_record = Attendance.query.filter(
-            Attendance.employee_id == employee_id,
-            Attendance.clock_out.isnot(None)
-        ).order_by(Attendance.clock_out.desc()).first()
+        """Calculates break time but ensures it remains within the same shift day."""
+        last_record = (
+            Attendance.query.filter(Attendance.employee_id == employee_id, Attendance.clock_out.isnot(None))
+            .order_by(Attendance.clock_out.desc())
+            .first()
+        )
 
         if last_record and last_record.clock_out:
             break_duration = clock_in_time - last_record.clock_out
-            if break_duration > timedelta(minutes=5):
+
+            # If the previous shift ended past midnight, adjust break time to stay within the workday
+            if break_duration < timedelta():
+                break_duration += timedelta(days=1)
+
+            if break_duration > timedelta(minutes=5):  # Consider break only if > 5 min
                 return break_duration
         return timedelta(seconds=0)
 
