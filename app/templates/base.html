@@ -16,7 +16,6 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
-</head>
 <body>
     {% if current_user.is_authenticated %}
     <header>
@@ -36,6 +35,8 @@
             <a href="{{ url_for('main.attendance') }}">Attendance</a>
             <a href="{{ url_for('main.logout') }}">Logout</a>
         </nav>
+
+
     </header>
     {% endif %}
     
@@ -105,6 +106,11 @@
         }
     });
     </script>
+
+
+
+
+
     
 
 

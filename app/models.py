@@ -5,6 +5,7 @@ import pytz  # Import pytz for timezone conversion
 from . import bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
+
 @login_manager.user_loader
 def load_user(user_id):
     admin = Admin.query.get(int(user_id))
@@ -110,3 +111,5 @@ class Report(db.Model):
     report_type = db.Column(db.String(50), nullable=False)
     file_path = db.Column(db.String(255), nullable=False, unique=True)
     generated_on = db.Column(db.DateTime, default=lambda: datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(UK_TIMEZONE))
+
+

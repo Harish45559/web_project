@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Menu Management{% endblock %}
+{% block content %}
+<h2>Food Menu</h2>
+
+<form method="POST" action="{{ url_for('main.menu') }}">
+    <label>Item Name:</label>
+    <input type="text" name="name" required>
+    
+    <label>Price:</label>
+    <input type="number" name="price" step="0.01" required>
+
+    <label>Group:</label>
+    <select name="group_id" required>
+        {% for group in groups %}
+        <option value="{{ group.id }}">{{ group.name }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Add Item</button>
+</form>
+
+<h3>Menu Items</h3>
+{% for group in groups %}
+    <h4>{{ group.name }}</h4>
+    <ul>
+        {% for item in group.items %}
+        <li>{{ item.name }} - £{{ item.price }}
+            <form method="POST" action="{{ url_for('main.delete_menu', item_id=item.id) }}" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+            <button onclick="printItem('{{ item.name|e }}', {{ item.price or 0.00 }})">Print</button>
+        </li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+
+<!-- ✅ Add the script at the end, before {% endblock %} -->
+<script>
+    function printItem(name, price) {
+        let content = "Item: " + name + "\nPrice: £" + price;
+        let newWindow = window.open('', '_blank', 'width=400,height=300');
+        if (newWindow) {
+            newWindow.document.write('<pre>' + content + '</pre>');
+            newWindow.print();
+            newWindow.close();
+        } else {
+            alert("Popup blocked! Please allow popups for this site.");
+        }
+    }
+</script>
+

@@ -13,6 +13,8 @@ from flask_login import login_required
 from flask_login import current_user
 from functools import wraps
 
+
+
 # Create a Blueprint
 main = Blueprint('main', __name__)
 
@@ -397,3 +399,6 @@ def reset_password():
             flash('User not found!', 'danger')
 
     return render_template('reset_password.html')
+
+
+

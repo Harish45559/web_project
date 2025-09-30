@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sales Report{% endblock %}
+{% block content %}
+<h2>End of Day Sales Report</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in sales %}
+        <tr>
+            <td>{{ order.item_name }}</td>
+            <td>£{{ order.price }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>£{{ order.total_price }}</td>
+            <td>{{ order.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Total Sales: £{{ total_sales }}</h3>
+
+{% endblock %}
